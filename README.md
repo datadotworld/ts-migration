@@ -7,7 +7,7 @@ The converter uses a fork of [babel-plugin-flow-to-typescript](https://github.co
 ## Installation
 
 ```
-yarn add --dev quizlet/ts-migration.git[#commit]
+yarn add --dev datadotworld/ts-migration.git[#commit]
 ```
 
 ### This tool assumes:
