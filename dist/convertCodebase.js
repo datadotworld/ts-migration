@@ -59,7 +59,7 @@ function process(filePaths, shouldCommit, filesFromCLI) {
             }
             function containsReact(path) {
                 const file = fs_1.default.readFileSync(path, "utf8");
-                return file.includes("from 'react';");
+                return file.includes("from 'react'");
             }
             yield util_2.asyncForEach(successFiles, (path, i) => __awaiter(this, void 0, void 0, function* () {
                 console.log(`${i + 1} of ${successFiles.length}: Renaming ${path}`);
