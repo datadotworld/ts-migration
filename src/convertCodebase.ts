@@ -61,7 +61,7 @@ export default async function process(
 
     function containsReact(path: string) {
       const file = fs.readFileSync(path, "utf8");
-      return file.includes("from 'react';");
+      return file.includes("from 'react'");
     }
 
     await asyncForEach(successFiles, async (path, i) => {
