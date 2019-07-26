@@ -21,8 +21,7 @@ describe("recast converter", () => {
       title: "preserves comments above imports",
       code: `// @flow\nimport * as React from "react";`,
       output: `// @flow
-import * as React from "react";
-`
+import * as React from "react";`
     },
     {
       title: "preserves comments within typedefs",
@@ -32,11 +31,10 @@ import * as React from "react";
   verticalAlignWithoutScroll?: "top" | "center",
 };`,
       output: `type Props = {
-  children?: React.Node;
+  children?: React.Node,
   // The vertical alignment of the content before it starts to scroll
-  verticalAlignWithoutScroll?: "top" | "center";
-};
-`
+  verticalAlignWithoutScroll?: "top" | "center"
+};`
     }
   ]);
 });

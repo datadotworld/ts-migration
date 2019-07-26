@@ -1,12 +1,12 @@
-import * as babel from "@babel/core";
+import * as babel from '@babel/core';
 // @ts-ignore
-import dynamicImport from "@babel/plugin-syntax-dynamic-import";
-import recast from "recast";
-import { writeFileSync } from "fs";
-import plugin from "babel-plugin-flow-to-typescript";
-import { asyncForEach } from "./util";
-import prettierFormat from "./prettierFormat";
-import { stripComments } from "./stripComments";
+import dynamicImport from '@babel/plugin-syntax-dynamic-import';
+import recast from 'recast';
+import { writeFileSync } from 'fs';
+import plugin from 'babel-plugin-flow-to-typescript';
+import { asyncForEach } from './util';
+import prettierFormat from './prettierFormat';
+import { stripComments } from './stripComments';
 
 function recastParse(
   code: string,
@@ -38,6 +38,7 @@ const recastPlugin = function(rootDir: string) {
 };
 
 export const babelOptions = (rootDir: string): babel.TransformOptions => ({
+  configFile: false,
   plugins: [recastPlugin(rootDir), plugin, dynamicImport]
 });
 
@@ -50,7 +51,7 @@ export default async function convert(files: string[], rootDir: string) {
     let res;
     try {
       res = await babel.transformFileAsync(path, babelOptions(rootDir));
-      res!.code = stripComments(res!.code!, ["// @flow", "// @noflow"])[0];
+      res!.code = stripComments(res!.code!, ['// @flow', '// @noflow'])[0];
     } catch (err) {
       console.log(err);
       errorFiles.push(path);
