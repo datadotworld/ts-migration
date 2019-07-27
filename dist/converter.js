@@ -50,6 +50,7 @@ const recastPlugin = function (rootDir) {
     };
 };
 exports.babelOptions = (rootDir) => ({
+    configFile: false,
     plugins: [recastPlugin(rootDir), babel_plugin_flow_to_typescript_1.default, plugin_syntax_dynamic_import_1.default]
 });
 const successFiles = [];
@@ -61,7 +62,7 @@ function convert(files, rootDir) {
             let res;
             try {
                 res = yield babel.transformFileAsync(path, exports.babelOptions(rootDir));
-                res.code = stripComments_1.stripComments(res.code, ["// @flow", "// @noflow"])[0];
+                res.code = stripComments_1.stripComments(res.code, ['// @flow', '// @noflow'])[0];
             }
             catch (err) {
                 console.log(err);
