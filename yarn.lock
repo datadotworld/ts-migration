@@ -162,20 +162,6 @@
     "@babel/parser" "^7.4.4"
     "@babel/types" "^7.4.4"
 
-"@babel/traverse@7.2.3", "@babel/traverse@^7.1.5", "@babel/traverse@^7.2.2":
-  version "7.2.3"
-  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.2.3.tgz#7ff50cefa9c7c0bd2d81231fdac122f3957748d8"
-  dependencies:
-    "@babel/code-frame" "^7.0.0"
-    "@babel/generator" "^7.2.2"
-    "@babel/helper-function-name" "^7.1.0"
-    "@babel/helper-split-export-declaration" "^7.0.0"
-    "@babel/parser" "^7.2.3"
-    "@babel/types" "^7.2.2"
-    debug "^4.1.0"
-    globals "^11.1.0"
-    lodash "^4.17.10"
-
 "@babel/traverse@^7.1.0", "@babel/traverse@^7.2.3", "@babel/traverse@^7.4.3", "@babel/traverse@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.5.5.tgz#f664f8f368ed32988cd648da9f72d5ca70f165bb"
@@ -190,7 +176,21 @@
     globals "^11.1.0"
     lodash "^4.17.13"
 
-"@babel/types@7.2.2", "@babel/types@^7.0.0", "@babel/types@^7.2.2":
+"@babel/traverse@^7.1.5", "@babel/traverse@^7.2.2":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.2.3.tgz#7ff50cefa9c7c0bd2d81231fdac122f3957748d8"
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@babel/generator" "^7.2.2"
+    "@babel/helper-function-name" "^7.1.0"
+    "@babel/helper-split-export-declaration" "^7.0.0"
+    "@babel/parser" "^7.2.3"
+    "@babel/types" "^7.2.2"
+    debug "^4.1.0"
+    globals "^11.1.0"
+    lodash "^4.17.10"
+
+"@babel/types@^7.0.0", "@babel/types@^7.2.2":
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.2.2.tgz#44e10fc24e33af524488b716cdaee5360ea8ed1e"
   dependencies:
@@ -468,12 +468,6 @@
   dependencies:
     "@types/jest-diff" "*"
 
-"@types/jest@^24.0.13":
-  version "24.0.13"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.13.tgz#10f50b64cb05fb02411fbba49e9042a3a11da3f9"
-  dependencies:
-    "@types/jest-diff" "*"
-
 "@types/lodash@^4.14.123":
   version "4.14.123"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.123.tgz#39be5d211478c8dd3bdae98ee75bb7efe4abfe4d"
@@ -681,14 +675,13 @@ babel-jest@^24.8.0:
     chalk "^2.4.2"
     slash "^2.0.0"
 
-"babel-plugin-flow-to-typescript@git+https://github.com/rgoldfinger-quizlet/babel-plugin-flow-to-typescript.git#facfeb4f65e270d3635891b870886b971946ebb8":
-  version "0.3.0"
-  resolved "git+https://github.com/rgoldfinger-quizlet/babel-plugin-flow-to-typescript.git#facfeb4f65e270d3635891b870886b971946ebb8"
+"babel-plugin-flow-to-typescript@git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f":
+  version "0.5.0"
+  resolved "git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f"
   dependencies:
-    "@babel/traverse" "7.2.3"
-    "@babel/types" "7.2.2"
-    "@types/jest" "^24.0.13"
-    prettier "^1.17.1"
+    "@babel/template" "^7.4.4"
+    "@babel/traverse" "^7.5.5"
+    "@babel/types" "^7.5.5"
 
 babel-plugin-istanbul@^5.1.0:
   version "5.2.0"
@@ -2622,10 +2615,6 @@ prelude-ls@~1.1.2:
 prettier@^1.16.4:
   version "1.16.4"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.16.4.tgz#73e37e73e018ad2db9c76742e2647e21790c9717"
-
-prettier@^1.17.1:
-  version "1.17.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.17.1.tgz#ed64b4e93e370cb8a25b9ef7fef3e4fd1c0995db"
 
 pretty-format@^24.8.0:
   version "24.8.0"
