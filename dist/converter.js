@@ -25,7 +25,6 @@ const recast_1 = __importDefault(require("recast"));
 const fs_1 = require("fs");
 const babel_plugin_flow_to_typescript_1 = __importDefault(require("babel-plugin-flow-to-typescript"));
 const util_1 = require("./util");
-const prettierFormat_1 = __importDefault(require("./prettierFormat"));
 const stripComments_1 = require("./stripComments");
 function recastParse(code, options, parse) {
     return recast_1.default.parse(code, {
@@ -36,10 +35,9 @@ function recastParse(code, options, parse) {
         }
     });
 }
-function buildRecastGenerate(rootDir = global.process.cwd()) {
+function buildRecastGenerate(_rootDir = global.process.cwd()) {
     return function recastGenerate(ast) {
         const file = recast_1.default.print(ast);
-        file.code = prettierFormat_1.default(file.code, rootDir);
         return file;
     };
 }
