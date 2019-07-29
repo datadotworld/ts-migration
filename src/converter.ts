@@ -5,7 +5,6 @@ import recast from 'recast';
 import { writeFileSync } from 'fs';
 import plugin from 'babel-plugin-flow-to-typescript';
 import { asyncForEach } from './util';
-import prettierFormat from './prettierFormat';
 import { stripComments } from './stripComments';
 
 function recastParse(
@@ -22,10 +21,9 @@ function recastParse(
   });
 }
 
-function buildRecastGenerate(rootDir: string = global.process.cwd()) {
+function buildRecastGenerate(_rootDir: string = global.process.cwd()) {
   return function recastGenerate(ast: File): { code: string; map?: object } {
     const file = recast.print(ast);
-    file.code = prettierFormat(file.code, rootDir);
     return file;
   };
 }
