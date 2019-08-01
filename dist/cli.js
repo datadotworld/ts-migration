@@ -15,7 +15,7 @@ const { configJSON } = tsCompilerHelpers_1.createTSCompiler(rootDir);
 const filePaths = {
     rootDir,
     include: configJSON.config.include,
-    exclude: [],
+    exclude: configJSON.config.exclude,
     extensions: [".ts", ".tsx"]
 };
 commander_1.default
