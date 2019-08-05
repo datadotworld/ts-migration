@@ -1,18 +1,30 @@
-import ts from "typescript";
-import { readFileSync, existsSync } from "fs";
+import ts from 'typescript';
+import { existsSync } from 'fs';
 
-import path from "path";
-import collectFiles from "./collectFiles";
-import { FilePaths } from "./cli";
+import path from 'path';
+import collectFiles from './collectFiles';
+import { FilePaths } from './cli';
 
 export function createTSCompiler(rootDir: string) {
-  const fileName = path.join(rootDir, "tsconfig.json");
-  const optionsFile = readFileSync(fileName, "utf8");
-  const configJSON = ts.parseConfigFileTextToJson(fileName, optionsFile);
+  const configPath = path.join(rootDir, 'tsconfig.json');
+  const configJSON = ts.readConfigFile(configPath, ts.sys.readFile);
+
+  let extendedCompilerOptions = {};
+  if (configJSON.config.extends) {
+    const extendedConfigPath = path.join(rootDir, configJSON.config.extends);
+    const extendedConfigJSON = ts.readConfigFile(
+      extendedConfigPath,
+      ts.sys.readFile
+    );
+
+    extendedCompilerOptions = extendedConfigJSON.config.compilerOptions;
+  }
+
   const compilerOptions = ts.convertCompilerOptionsFromJson(
-    configJSON.config.compilerOptions,
+    { ...extendedCompilerOptions, ...configJSON.config.compilerOptions },
     rootDir
   );
+
   return {
     configJSON,
     compilerOptions
