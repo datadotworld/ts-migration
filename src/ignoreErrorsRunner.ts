@@ -49,7 +49,7 @@ export default async function compile(
   });
 
   if (shouldCommit) {
-    await commit("Ignore errors", paths);
+    await commit(":see_no_evil: ignore errors", paths);
   }
 
   console.log(`${successFiles.length} files with errors ignored successfully.`);
