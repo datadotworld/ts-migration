@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
 const utils = __importStar(require("tsutils"));
 const IGNORE_TEXT = '// @ts-ignore';
+const missingTypesPackages = [];
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
 // JsxOpeningElement = 262,
@@ -42,8 +43,9 @@ function specificIgnoreText(diagnostic) {
     const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ';');
     const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/);
     if (missingTypes) {
-        const packageName = missingTypes[1];
-        return `Missing "@types/${packageName}"`;
+        const packageName = `@types/${missingTypes[1]}`;
+        missingTypesPackages.push(packageName);
+        return `Missing "${packageName}"`;
     }
     if (message.endsWith(' has no default export.')) {
         return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
@@ -56,6 +58,10 @@ function ignoreText(diagnostic) {
         ? IGNORE_TEXT
         : `${IGNORE_TEXT} -- ${specificText}`;
 }
+function getMissingTypePackages() {
+    return missingTypesPackages;
+}
+exports.getMissingTypePackages = getMissingTypePackages;
 function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {
     const convertedAST = utils.convertAst(diagnostic.file);
     const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
@@ -68,5 +74,5 @@ function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {
     codeSplitByLine.splice(line, 0, ignoreText(diagnostic));
     return codeSplitByLine;
 }
-exports.default = insertIgnore;
+exports.insertIgnore = insertIgnore;
 //# sourceMappingURL=insertIgnore.js.map

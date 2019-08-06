@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = require("lodash");
 const fs_1 = require("fs");
-const insertIgnore_1 = __importDefault(require("./insertIgnore"));
+const insertIgnore_1 = require("./insertIgnore");
 const commitAll_1 = __importDefault(require("./commitAll"));
 const prettierFormat_1 = __importDefault(require("./prettierFormat"));
 const tsCompilerHelpers_1 = require("./tsCompilerHelpers");
@@ -29,11 +29,11 @@ function compile(paths, shouldCommit, includeJSX) {
             console.log(`${i} of ${arr.length - 1}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}`);
             try {
                 const filePath = tsCompilerHelpers_1.getFilePath(paths, fileDiagnostics[0]);
-                let codeSplitByLine = fs_1.readFileSync(filePath, "utf8").split("\n");
+                let codeSplitByLine = fs_1.readFileSync(filePath, 'utf8').split('\n');
                 fileDiagnostics.forEach((diagnostic, _errorIndex) => {
-                    codeSplitByLine = insertIgnore_1.default(diagnostic, codeSplitByLine, includeJSX);
+                    codeSplitByLine = insertIgnore_1.insertIgnore(diagnostic, codeSplitByLine, includeJSX);
                 });
-                const fileData = codeSplitByLine.join("\n");
+                const fileData = codeSplitByLine.join('\n');
                 const formattedFileData = prettierFormat_1.default(fileData, paths.rootDir);
                 fs_1.writeFileSync(filePath, formattedFileData);
                 successFiles.push(fileName);
@@ -44,9 +44,11 @@ function compile(paths, shouldCommit, includeJSX) {
             }
         }));
         if (shouldCommit) {
-            yield commitAll_1.default(":see_no_evil: ignore errors", paths);
+            yield commitAll_1.default(':see_no_evil: ignore errors', paths);
         }
         console.log(`${successFiles.length} files with errors ignored successfully.`);
+        const missingTypePackages = insertIgnore_1.getMissingTypePackages().join(' ');
+        console.log(`Consider adding these packages:\n${missingTypePackages}`);
         if (errorFiles.length) {
             console.log(`Error handling ${errorFiles.length} files:`);
             console.log(errorFiles);
