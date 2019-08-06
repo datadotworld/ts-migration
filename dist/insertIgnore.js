@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -7,8 +10,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const typescript_1 = __importDefault(require("typescript"));
 const utils = __importStar(require("tsutils"));
-const IGNORE_TEXT = "// @ts-ignore FIXME";
+const IGNORE_TEXT = '// @ts-ignore';
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
 // JsxOpeningElement = 262,
@@ -34,6 +38,24 @@ function getLine(diagnostic, position) {
     const { line } = diagnostic.file.getLineAndCharacterOfPosition(position || diagnostic.start);
     return line;
 }
+function specificIgnoreText(diagnostic) {
+    const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ';');
+    const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/);
+    if (missingTypes) {
+        const packageName = missingTypes[1];
+        return `Missing "@types/${packageName}"`;
+    }
+    if (message.endsWith(' has no default export.')) {
+        return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
+    }
+    return message;
+}
+function ignoreText(diagnostic) {
+    const specificText = specificIgnoreText(diagnostic);
+    return specificText == null
+        ? IGNORE_TEXT
+        : `${IGNORE_TEXT} -- ${specificText}`;
+}
 function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {
     const convertedAST = utils.convertAst(diagnostic.file);
     const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
@@ -43,7 +65,7 @@ function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {
         // Don't add ignores in JSX since it's too hard.
         return codeSplitByLine;
     }
-    codeSplitByLine.splice(line, 0, IGNORE_TEXT);
+    codeSplitByLine.splice(line, 0, ignoreText(diagnostic));
     return codeSplitByLine;
 }
 exports.default = insertIgnore;
