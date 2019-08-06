@@ -1,5 +1,5 @@
-import ts from "typescript";
-import { FilePaths } from "./cli";
+import ts from 'typescript';
+import { FilePaths } from './cli';
 export declare function createTSCompiler(rootDir: string): {
     configJSON: {
         config?: any;
