@@ -1,10 +1,10 @@
-import { groupBy, uniqBy } from "lodash";
-import { readFileSync, writeFileSync } from "fs";
-import insertIgnore from "./insertIgnore";
-import commit from "./commitAll";
-import prettierFormat from "./prettierFormat";
-import { getFilePath, getDiagnostics } from "./tsCompilerHelpers";
-import { FilePaths } from "./cli";
+import { groupBy, uniqBy } from 'lodash';
+import { readFileSync, writeFileSync } from 'fs';
+import { insertIgnore, getMissingTypePackages } from './insertIgnore';
+import commit from './commitAll';
+import prettierFormat from './prettierFormat';
+import { getFilePath, getDiagnostics } from './tsCompilerHelpers';
+import { FilePaths } from './cli';
 
 const successFiles: string[] = [];
 const errorFiles: string[] = [];
@@ -34,11 +34,11 @@ export default async function compile(
     );
     try {
       const filePath = getFilePath(paths, fileDiagnostics[0]);
-      let codeSplitByLine = readFileSync(filePath, "utf8").split("\n");
+      let codeSplitByLine = readFileSync(filePath, 'utf8').split('\n');
       fileDiagnostics.forEach((diagnostic, _errorIndex) => {
         codeSplitByLine = insertIgnore(diagnostic, codeSplitByLine, includeJSX);
       });
-      const fileData = codeSplitByLine.join("\n");
+      const fileData = codeSplitByLine.join('\n');
       const formattedFileData = prettierFormat(fileData, paths.rootDir);
       writeFileSync(filePath, formattedFileData);
       successFiles.push(fileName);
@@ -49,10 +49,13 @@ export default async function compile(
   });
 
   if (shouldCommit) {
-    await commit(":see_no_evil: ignore errors", paths);
+    await commit(':see_no_evil: ignore errors', paths);
   }
 
   console.log(`${successFiles.length} files with errors ignored successfully.`);
+
+  const missingTypePackages = getMissingTypePackages().join(' ')
+  console.log(`Consider adding these packages:\n${missingTypePackages}`)
   if (errorFiles.length) {
     console.log(`Error handling ${errorFiles.length} files:`);
     console.log(errorFiles);

@@ -3,6 +3,7 @@ import * as utils from 'tsutils';
 import { NodeWrap } from 'tsutils';
 
 const IGNORE_TEXT = '// @ts-ignore';
+const missingTypesPackages: string[] = [];
 
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
@@ -40,8 +41,9 @@ function specificIgnoreText(diagnostic: ts.Diagnostic) {
     /^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/
   );
   if (missingTypes) {
-    const packageName = missingTypes[1];
-    return `Missing "@types/${packageName}"`;
+    const packageName = `@types/${missingTypes[1]}`;
+    missingTypesPackages.push(packageName);
+    return `Missing "${packageName}"`;
   }
 
   if (message.endsWith(' has no default export.')) {
@@ -59,7 +61,11 @@ function ignoreText(diagnostic: ts.Diagnostic) {
     : `${IGNORE_TEXT} -- ${specificText}`;
 }
 
-export default function insertIgnore(
+export function getMissingTypePackages() {
+  return missingTypesPackages;
+}
+
+export function insertIgnore(
   diagnostic: ts.Diagnostic,
   codeSplitByLine: string[],
   includeJSX: boolean
