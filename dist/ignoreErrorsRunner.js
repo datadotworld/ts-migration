@@ -44,7 +44,7 @@ function compile(paths, shouldCommit, includeJSX) {
             }
         }));
         if (shouldCommit) {
-            yield commitAll_1.default("Ignore errors", paths);
+            yield commitAll_1.default(":see_no_evil: ignore errors", paths);
         }
         console.log(`${successFiles.length} files with errors ignored successfully.`);
         if (errorFiles.length) {
