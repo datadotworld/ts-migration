@@ -38,7 +38,7 @@ function specificIgnoreText(diagnostic: ts.Diagnostic) {
   const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, ';');
 
   const missingTypes = message.match(
-    /^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/
+    /^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/
   );
   if (missingTypes) {
     const packageName = `@types/${missingTypes[1]}`;

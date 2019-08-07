@@ -41,7 +41,7 @@ function getLine(diagnostic, position) {
 }
 function specificIgnoreText(diagnostic) {
     const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ';');
-    const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/);
+    const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/);
     if (missingTypes) {
         const packageName = `@types/${missingTypes[1]}`;
         missingTypesPackages.add(packageName);
