@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
 const utils = __importStar(require("tsutils"));
 const IGNORE_TEXT = '// @ts-ignore';
-const missingTypesPackages = [];
+const missingTypesPackages = new Set();
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
 // JsxOpeningElement = 262,
@@ -44,7 +44,7 @@ function specificIgnoreText(diagnostic) {
     const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|\-|\.|\@|\/)*)'/);
     if (missingTypes) {
         const packageName = `@types/${missingTypes[1]}`;
-        missingTypesPackages.push(packageName);
+        missingTypesPackages.add(packageName);
         return `Missing "${packageName}"`;
     }
     if (message.endsWith(' has no default export.')) {
@@ -59,7 +59,7 @@ function ignoreText(diagnostic) {
         : `${IGNORE_TEXT} -- ${specificText}`;
 }
 function getMissingTypePackages() {
-    return missingTypesPackages;
+    return [...missingTypesPackages].sort();
 }
 exports.getMissingTypePackages = getMissingTypePackages;
 function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {

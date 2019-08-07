@@ -3,7 +3,7 @@ import * as utils from 'tsutils';
 import { NodeWrap } from 'tsutils';
 
 const IGNORE_TEXT = '// @ts-ignore';
-const missingTypesPackages: string[] = [];
+const missingTypesPackages = new Set<string>();
 
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
@@ -42,7 +42,7 @@ function specificIgnoreText(diagnostic: ts.Diagnostic) {
   );
   if (missingTypes) {
     const packageName = `@types/${missingTypes[1]}`;
-    missingTypesPackages.push(packageName);
+    missingTypesPackages.add(packageName);
     return `Missing "${packageName}"`;
   }
 
@@ -62,7 +62,7 @@ function ignoreText(diagnostic: ts.Diagnostic) {
 }
 
 export function getMissingTypePackages() {
-  return missingTypesPackages;
+  return [...missingTypesPackages].sort();
 }
 
 export function insertIgnore(
