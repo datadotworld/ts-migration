@@ -47,8 +47,10 @@ function compile(paths, shouldCommit, includeJSX) {
             yield commitAll_1.default(':see_no_evil: ignore errors', paths);
         }
         console.log(`${successFiles.length} files with errors ignored successfully.`);
-        const missingTypePackages = insertIgnore_1.getMissingTypePackages().join(' ');
-        console.log(`Consider adding these packages:\n${missingTypePackages}`);
+        const missingTypePackages = insertIgnore_1.getMissingTypePackages();
+        if (missingTypePackages.length > 0) {
+            console.log(`Consider adding these package(s):\n${missingTypePackages.join(' ')}`);
+        }
         if (errorFiles.length) {
             console.log(`Error handling ${errorFiles.length} files:`);
             console.log(errorFiles);

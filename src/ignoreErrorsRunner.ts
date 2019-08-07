@@ -54,8 +54,14 @@ export default async function compile(
 
   console.log(`${successFiles.length} files with errors ignored successfully.`);
 
-  const missingTypePackages = getMissingTypePackages().join(' ')
-  console.log(`Consider adding these packages:\n${missingTypePackages}`)
+  const missingTypePackages = getMissingTypePackages();
+
+  if (missingTypePackages.length > 0) {
+    console.log(
+      `Consider adding these package(s):\n${missingTypePackages.join(' ')}`
+    );
+  }
+
   if (errorFiles.length) {
     console.log(`Error handling ${errorFiles.length} files:`);
     console.log(errorFiles);
