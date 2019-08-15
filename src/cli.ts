@@ -84,17 +84,30 @@ program
     "A comma-seperated list of strings to exclude",
     (f: string) => f.split(",")
   )
+  .option(
+    "--files <list>",
+    "A comma-seperated list of files to convert",
+    (f: string) => f.split(",")
+  )
   .action(
     (cmd: {
       commit: boolean | undefined;
       exclude: string[] | undefined;
       includeJSX: boolean;
+      files?: string[];
     }) => {
       console.log("Ignoring Typescript errors...");
-      const paths = {
-        ...filePaths,
-        exclude: [...filePaths.exclude, ...(cmd.exclude || [])]
-      };
+      const paths =
+        cmd.files && cmd.files.length > 0
+          ? {
+              ...filePaths,
+              include: [...cmd.files],
+              exclude: []
+            }
+          : {
+              ...filePaths,
+              exclude: [...filePaths.exclude, ...(cmd.exclude || [])]
+            };
       console.log(paths);
 
       ignoreErrors(paths, !!cmd.commit, cmd.includeJSX);
