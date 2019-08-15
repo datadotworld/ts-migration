@@ -12,7 +12,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
 const utils = __importStar(require("tsutils"));
-const IGNORE_TEXT = '// @ts-ignore';
+const IGNORE_TEXT = "// @ts-ignore";
 const missingTypesPackages = new Set();
 // JsxElement = 260,
 // JsxSelfClosingElement = 261,
@@ -27,9 +27,9 @@ const missingTypesPackages = new Set();
 // JsxExpression = 270,
 function findParentJSX(n) {
     if (n) {
-        const kind = n.kind;
-        if (kind >= 260 && kind <= 270) {
-            return [kind, n];
+        if (n.kind >= typescript_1.default.SyntaxKind.JsxElement &&
+            n.kind <= typescript_1.default.SyntaxKind.JsxExpression) {
+            return [n.kind, n];
         }
         return findParentJSX(n.parent);
     }
@@ -40,17 +40,20 @@ function getLine(diagnostic, position) {
     return line;
 }
 function specificIgnoreText(diagnostic) {
-    const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ';');
+    const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ";");
     const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/);
     if (missingTypes) {
         const packageName = `@types/${missingTypes[1]}`;
         missingTypesPackages.add(packageName);
         return `Missing "${packageName}"`;
     }
-    if (message.endsWith(' has no default export.')) {
+    if (message.endsWith(" has no default export.")) {
         return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
     }
     return message;
+}
+function nodeContainsTSIgnore(node) {
+    return typescript_1.default.isJsxText(node) && node.text.includes(IGNORE_TEXT);
 }
 function ignoreText(diagnostic) {
     const specificText = specificIgnoreText(diagnostic);
@@ -71,8 +74,29 @@ function insertIgnore(diagnostic, codeSplitByLine, includeJSX) {
         // Don't add ignores in JSX since it's too hard.
         return codeSplitByLine;
     }
-    codeSplitByLine.splice(line, 0, ignoreText(diagnostic));
-    return codeSplitByLine;
+    const ignoreComment = ignoreText(diagnostic);
+    const maybeResult = [
+        ...codeSplitByLine.slice(0, line),
+        IGNORE_TEXT,
+        ...codeSplitByLine.slice(line)
+    ];
+    if (isInJSX) {
+        const sourceFile = typescript_1.default.createSourceFile(diagnostic.file.fileName, maybeResult.join("\n"), typescript_1.default.ScriptTarget.ESNext);
+        const newConvertedAst = utils.convertAst(sourceFile);
+        if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
+            return [
+                ...codeSplitByLine.slice(0, line),
+                "{ /*",
+                `${ignoreComment} */ }`,
+                ...codeSplitByLine.slice(line)
+            ];
+        }
+    }
+    return [
+        ...codeSplitByLine.slice(0, line),
+        ignoreComment,
+        ...codeSplitByLine.slice(line)
+    ];
 }
 exports.insertIgnore = insertIgnore;
 //# sourceMappingURL=insertIgnore.js.map
