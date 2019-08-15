@@ -26,9 +26,13 @@ export default async function collectFiles(paths: {
   extensions: string[];
 }) {
   const filesArr = await Promise.all(
-    paths.include.map(includeDir =>
-      getFiles(path.join(paths.rootDir, includeDir))
-    )
+    paths.include.map(async include => {
+      const isFile = (await stat(path.join(paths.rootDir, include))).isFile();
+
+      return isFile
+        ? [include]
+        : await getFiles(path.join(paths.rootDir, include));
+    })
   );
   const files = filesArr.reduce((a, f) => a.concat(f), [] as string[]);
 
