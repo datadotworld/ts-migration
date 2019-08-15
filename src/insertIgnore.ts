@@ -1,8 +1,8 @@
-import ts from 'typescript';
-import * as utils from 'tsutils';
-import { NodeWrap } from 'tsutils';
+import ts from "typescript";
+import * as utils from "tsutils";
+import { NodeWrap } from "tsutils";
 
-const IGNORE_TEXT = '// @ts-ignore';
+const IGNORE_TEXT = "// @ts-ignore";
 const missingTypesPackages = new Set<string>();
 
 // JsxElement = 260,
@@ -18,9 +18,11 @@ const missingTypesPackages = new Set<string>();
 // JsxExpression = 270,
 function findParentJSX(n: NodeWrap | undefined): [number, NodeWrap] | null {
   if (n) {
-    const kind = n.kind as number;
-    if (kind >= 260 && kind <= 270) {
-      return [kind, n];
+    if (
+      n.kind >= ts.SyntaxKind.JsxElement &&
+      n.kind <= ts.SyntaxKind.JsxExpression
+    ) {
+      return [n.kind, n];
     }
     return findParentJSX(n.parent);
   }
@@ -35,7 +37,7 @@ function getLine(diagnostic: ts.Diagnostic, position?: number) {
 }
 
 function specificIgnoreText(diagnostic: ts.Diagnostic) {
-  const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, ';');
+  const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, ";");
 
   const missingTypes = message.match(
     /^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/
@@ -46,11 +48,15 @@ function specificIgnoreText(diagnostic: ts.Diagnostic) {
     return `Missing "${packageName}"`;
   }
 
-  if (message.endsWith(' has no default export.')) {
+  if (message.endsWith(" has no default export.")) {
     return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
   }
 
   return message;
+}
+
+function nodeContainsTSIgnore(node: ts.Node): boolean {
+  return ts.isJsxText(node) && node.text.includes(IGNORE_TEXT);
 }
 
 function ignoreText(diagnostic: ts.Diagnostic) {
@@ -83,7 +89,34 @@ export function insertIgnore(
     return codeSplitByLine;
   }
 
-  codeSplitByLine.splice(line, 0, ignoreText(diagnostic));
+  const ignoreComment = ignoreText(diagnostic);
+  const maybeResult = [
+    ...codeSplitByLine.slice(0, line),
+    IGNORE_TEXT,
+    ...codeSplitByLine.slice(line)
+  ];
 
-  return codeSplitByLine;
+  if (isInJSX) {
+    const sourceFile = ts.createSourceFile(
+      diagnostic.file!.fileName,
+      maybeResult.join("\n"),
+      ts.ScriptTarget.ESNext
+    );
+    const newConvertedAst = utils.convertAst(sourceFile);
+
+    if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
+      return [
+        ...codeSplitByLine.slice(0, line),
+        "{ /*",
+        `${ignoreComment} */ }`,
+        ...codeSplitByLine.slice(line)
+      ];
+    }
+  }
+
+  return [
+    ...codeSplitByLine.slice(0, line),
+    ignoreComment,
+    ...codeSplitByLine.slice(line)
+  ];
 }
