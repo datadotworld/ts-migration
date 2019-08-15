@@ -20,7 +20,7 @@ const converter_1 = __importDefault(require("./converter"));
 const util_2 = require("./util");
 const commitAll_1 = __importDefault(require("./commitAll"));
 const exists = util_1.promisify(fs_1.default.exists);
-function process(filePaths, shouldCommit, filesFromCLI) {
+function process(filePaths, shouldCommit, shouldRename, filesFromCLI) {
     return __awaiter(this, void 0, void 0, function* () {
         const git = promise_1.default(filePaths.rootDir);
         const files = filesFromCLI || (yield collectFiles_1.default(filePaths));
@@ -32,10 +32,23 @@ function process(filePaths, shouldCommit, filesFromCLI) {
             console.log(errorFiles);
         if (shouldCommit) {
             yield commitAll_1.default(":construction: convert files to typescript", filePaths);
+        }
+        else {
+            console.log("skipping commit in dry run mode");
+        }
+        if (shouldRename) {
             const renameErrors = [];
             console.log("renaming files");
             const snapsFound = [];
             const snapsNotFound = [];
+            const fsRename = util_1.promisify(fs_1.default.rename);
+            const mv = (oldPath, newPath) => __awaiter(this, void 0, void 0, function* () {
+                // Using fs.rename + add/rm, because git.mv demands that all files are already tracked by git,
+                // which isn't always the case for our branch conversions.
+                yield fsRename(oldPath, newPath);
+                yield git.add(newPath);
+                yield git.rm(oldPath);
+            });
             function renameSnap(path, oldExt, newExt) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const parsedPath = path_1.default.parse(path);
@@ -45,7 +58,7 @@ function process(filePaths, shouldCommit, filesFromCLI) {
                         console.log(`Renaming ${jsSnapPath} to ${tsSnapPath}`);
                         snapsFound.push(jsSnapPath);
                         try {
-                            yield git.mv(jsSnapPath, tsSnapPath);
+                            yield mv(jsSnapPath, tsSnapPath);
                         }
                         catch (e) {
                             console.log(e);
@@ -72,7 +85,7 @@ function process(filePaths, shouldCommit, filesFromCLI) {
                         return containsReact(path) ? ".tsx" : ".ts";
                     })();
                     const newPath = path.replace(oldExt, newExt);
-                    yield git.mv(path, newPath);
+                    yield mv(path, newPath);
                     if (path.includes("__tests__") || path.includes("-test")) {
                         yield renameSnap(path, oldExt, newExt);
                     }
@@ -87,14 +100,13 @@ function process(filePaths, shouldCommit, filesFromCLI) {
                 console.log(renameErrors);
             console.log(`Snaps found: ${snapsFound.length}`);
             console.log(`Snaps Not found: ${snapsNotFound.length}`);
-            yield commitAll_1.default(":truck: rename files to .ts/.tsx", filePaths);
+            if (shouldCommit) {
+                yield commitAll_1.default(":truck: rename files to .ts/.tsx", filePaths);
+            }
             console.log(`${successFiles.length} converted successfully.`);
             console.log(`${errorFiles.length} errors`);
             if (errorFiles.length)
                 console.log(errorFiles);
-        }
-        else {
-            console.log("skipping commit in dry run mode");
         }
     });
 }
