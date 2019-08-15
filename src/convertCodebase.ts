@@ -16,6 +16,7 @@ const exists = promisify(fs.exists);
 export default async function process(
   filePaths: FilePaths,
   shouldCommit: boolean,
+  shouldRename: boolean,
   filesFromCLI: string[] | undefined
 ) {
   const git = simplegit(filePaths.rootDir);
@@ -30,12 +31,25 @@ export default async function process(
   if (errorFiles.length) console.log(errorFiles);
   if (shouldCommit) {
     await commit(":construction: convert files to typescript", filePaths);
+  } else {
+    console.log("skipping commit in dry run mode");
+  }
 
+  if (shouldRename) {
     const renameErrors: string[] = [];
 
     console.log("renaming files");
     const snapsFound: string[] = [];
     const snapsNotFound: string[] = [];
+
+    const fsRename = promisify(fs.rename)
+    const mv = async (oldPath: string, newPath: string) => {
+      // Using fs.rename + add/rm, because git.mv demands that all files are already tracked by git,
+      // which isn't always the case for our branch conversions.
+      await fsRename(oldPath, newPath)
+      await git.add(newPath)
+      await git.rm(oldPath)
+    }
 
     async function renameSnap(path: string, oldExt: string, newExt: string) {
       const parsedPath = pathUtils.parse(path);
@@ -49,7 +63,7 @@ export default async function process(
         console.log(`Renaming ${jsSnapPath} to ${tsSnapPath}`);
         snapsFound.push(jsSnapPath);
         try {
-          await git.mv(jsSnapPath, tsSnapPath);
+          await mv(jsSnapPath, tsSnapPath);
         } catch (e) {
           console.log(e);
           renameErrors.push(path);
@@ -76,7 +90,7 @@ export default async function process(
         })();
 
         const newPath = path.replace(oldExt, newExt);
-        await git.mv(path, newPath);
+        await mv(path, newPath);
         if (path.includes("__tests__") || path.includes("-test")) {
           await renameSnap(path, oldExt, newExt);
         }
@@ -91,12 +105,12 @@ export default async function process(
 
     console.log(`Snaps found: ${snapsFound.length}`);
     console.log(`Snaps Not found: ${snapsNotFound.length}`);
-    await commit(":truck: rename files to .ts/.tsx", filePaths);
+    if (shouldCommit) {
+      await commit(":truck: rename files to .ts/.tsx", filePaths);
+    }
 
     console.log(`${successFiles.length} converted successfully.`);
     console.log(`${errorFiles.length} errors`);
     if (errorFiles.length) console.log(errorFiles);
-  } else {
-    console.log("skipping commit in dry run mode");
   }
 }
