@@ -37,7 +37,7 @@ function getDiagnostics(paths) {
         const { compilerOptions } = createTSCompiler(paths.rootDir);
         const program = typescript_1.default.createProgram(files, compilerOptions.options);
         const diagnostics = typescript_1.default.getPreEmitDiagnostics(program);
-        return diagnostics.filter(diagnostic => paths.include.some(includedFile => diagnostic.file.fileName.includes(includedFile)));
+        return diagnostics.filter(diagnostic => paths.include.some(includedPath => diagnostic.file.fileName.includes(includedPath)));
     });
 }
 exports.getDiagnostics = getDiagnostics;
