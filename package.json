@@ -39,6 +39,7 @@
     "babel-plugin-flow-to-typescript": "git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f",
     "@babel/traverse": "^7.2.3",
     "@babel/types": "^7.2.2",
+    "commander": "2.20.0",
     "lodash": "^4.17.11",
     "prettier": "^1.16.4",
     "recast": "^0.17.5",
