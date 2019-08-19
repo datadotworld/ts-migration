@@ -16,7 +16,7 @@ const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const collectFiles_1 = __importDefault(require("./collectFiles"));
 function createTSCompiler(rootDir) {
-    const configPath = path_1.default.join(rootDir, 'tsconfig.json');
+    const configPath = path_1.default.join(rootDir, "tsconfig.json");
     const configJSON = typescript_1.default.readConfigFile(configPath, typescript_1.default.sys.readFile);
     let extendedCompilerOptions = {};
     if (configJSON.config.extends) {
@@ -37,7 +37,7 @@ function getDiagnostics(paths) {
         const { compilerOptions } = createTSCompiler(paths.rootDir);
         const program = typescript_1.default.createProgram(files, compilerOptions.options);
         const diagnostics = typescript_1.default.getPreEmitDiagnostics(program);
-        return diagnostics;
+        return diagnostics.filter(diagnostic => paths.include.some(includedFile => diagnostic.file.fileName.includes(includedFile)));
     });
 }
 exports.getDiagnostics = getDiagnostics;
