@@ -1,12 +1,12 @@
-import ts from 'typescript';
-import { existsSync } from 'fs';
+import ts from "typescript";
+import { existsSync } from "fs";
 
-import path from 'path';
-import collectFiles from './collectFiles';
-import { FilePaths } from './cli';
+import path from "path";
+import collectFiles from "./collectFiles";
+import { FilePaths } from "./cli";
 
 export function createTSCompiler(rootDir: string) {
-  const configPath = path.join(rootDir, 'tsconfig.json');
+  const configPath = path.join(rootDir, "tsconfig.json");
   const configJSON = ts.readConfigFile(configPath, ts.sys.readFile);
 
   let extendedCompilerOptions = {};
@@ -38,7 +38,11 @@ export async function getDiagnostics(paths: FilePaths) {
   const program = ts.createProgram(files, compilerOptions.options);
 
   const diagnostics = ts.getPreEmitDiagnostics(program);
-  return diagnostics;
+  return diagnostics.filter(diagnostic =>
+    paths.include.some(includedPath =>
+      diagnostic.file!.fileName.includes(includedPath)
+    )
+  );
 }
 
 export function getFilePath(paths: FilePaths, diagnostic: ts.Diagnostic) {
