@@ -6,9 +6,13 @@ The converter uses a fork of [babel-plugin-flow-to-typescript](https://github.co
 
 ## Installation
 
+or add this in `devDependencies`:
+
 ```
-yarn add --dev datadotworld/ts-migration.git[#commit]
+"ts-migration": "git+https://github.com/datadotworld/ts-migration"
 ```
+
+and run `yarn` or if you're using lerna, then run `lerna bootstrap`.
 
 ### This tool assumes:
 
