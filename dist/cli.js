@@ -1,21 +1,41 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const tsCompilerHelpers_1 = require("./tsCompilerHelpers");
 const stripCommentsRunner_1 = __importDefault(require("./stripCommentsRunner"));
-const ignoreErrorsRunner_1 = __importDefault(require("./ignoreErrorsRunner"));
+const ignoreErrorsRunner_1 = __importStar(require("./ignoreErrorsRunner"));
 const ignoreFileErrorsRunner_1 = __importDefault(require("./ignoreFileErrorsRunner"));
 const convertCodebase_1 = __importDefault(require("./convertCodebase"));
 const checkRunner_1 = __importDefault(require("./checkRunner"));
+const path_1 = __importDefault(require("path"));
 const constructPaths = (rootDir = process.cwd()) => {
+    if (!path_1.default.isAbsolute(rootDir)) {
+        rootDir = path_1.default.resolve(rootDir);
+    }
+    process.chdir(rootDir);
     const { configJSON } = tsCompilerHelpers_1.createTSCompiler(rootDir);
     return {
         rootDir,
-        include: configJSON.config.include,
-        exclude: configJSON.config.exclude,
+        include: configJSON.config.include || [],
+        exclude: configJSON.config.exclude || [],
         extensions: [".ts", ".tsx"]
     };
 };
@@ -50,17 +70,21 @@ commander_1.default
     .command("ignore-errors")
     .option("--project <path>")
     .option("-c, --commit")
+    .option("--removeExisting", "Whether existing @ts-ignore comments should be removed from the input files before re-adding necessary ignores", false)
     .option("--includeJSX", "Insert ignores into JSX -- may cause runtime changes!", true)
     .option("--exclude <list>", "A comma-seperated list of strings to exclude", (f) => f.split(","))
     .option("--files <list>", "A comma-seperated list of files to convert", (f) => f.split(","))
-    .action((cmd) => {
+    .action((cmd) => __awaiter(this, void 0, void 0, function* () {
     console.log("Ignoring Typescript errors...");
     const filePaths = constructPaths(cmd.project);
     const paths = cmd.files && cmd.files.length > 0
         ? Object.assign({}, filePaths, { include: [...cmd.files], exclude: [] }) : Object.assign({}, filePaths, { exclude: [...filePaths.exclude, ...(cmd.exclude || [])] });
     console.log(paths);
+    if (cmd.removeExisting) {
+        yield ignoreErrorsRunner_1.removeIgnores(paths);
+    }
     ignoreErrorsRunner_1.default(paths, !!cmd.commit, cmd.includeJSX);
-});
+}));
 commander_1.default
     .command("ignore-file-errors")
     .option("--project <path>")

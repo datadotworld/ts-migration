@@ -59,12 +59,12 @@ function nodeContainsTSIgnore(node: ts.Node): boolean {
   return ts.isJsxText(node) && node.text.includes(IGNORE_TEXT);
 }
 
-function ignoreText(diagnostic: ts.Diagnostic) {
+function ignoreText(diagnostic: ts.Diagnostic, rootDir: string) {
   const specificText = specificIgnoreText(diagnostic);
 
   return specificText == null
     ? IGNORE_TEXT
-    : `${IGNORE_TEXT} -- ${specificText}`;
+    : `${IGNORE_TEXT} -- ${specificText.replace(rootDir, "")}`;
 }
 
 export function getMissingTypePackages() {
@@ -74,7 +74,8 @@ export function getMissingTypePackages() {
 export function insertIgnore(
   diagnostic: ts.Diagnostic,
   codeSplitByLine: string[],
-  includeJSX: boolean
+  includeJSX: boolean,
+  rootDir: string
 ) {
   const convertedAST = utils.convertAst(diagnostic.file!);
   const n = utils.getWrappedNodeAtPosition(
@@ -89,7 +90,7 @@ export function insertIgnore(
     return codeSplitByLine;
   }
 
-  const ignoreComment = ignoreText(diagnostic);
+  const ignoreComment = ignoreText(diagnostic, rootDir);
   const maybeResult = [
     ...codeSplitByLine.slice(0, line),
     IGNORE_TEXT,
@@ -114,6 +115,19 @@ export function insertIgnore(
     }
   }
 
+  // Ensure proper sequencing of eslint ignores and ts-ignores
+  if (
+    codeSplitByLine.length > 0 &&
+    line > 0 &&
+    codeSplitByLine[line - 1]!.includes("// eslint-disable-next-line")
+  ) {
+    return [
+      ...codeSplitByLine.slice(0, line - 1),
+      ignoreComment,
+      codeSplitByLine[line - 1],
+      ...codeSplitByLine.slice(line)
+    ];
+  }
   return [
     ...codeSplitByLine.slice(0, line),
     ignoreComment,

@@ -1,10 +1,11 @@
 import program from "commander";
 import { createTSCompiler } from "./tsCompilerHelpers";
 import stripComments from "./stripCommentsRunner";
-import ignoreErrors from "./ignoreErrorsRunner";
+import ignoreErrors, { removeIgnores } from "./ignoreErrorsRunner";
 import ignoreFileErrors from "./ignoreFileErrorsRunner";
 import convertCodebase from "./convertCodebase";
 import checkTypes from "./checkRunner";
+import path from "path";
 
 export interface FilePaths {
   rootDir: string;
@@ -14,11 +15,15 @@ export interface FilePaths {
 }
 
 const constructPaths = (rootDir: string = process.cwd()): FilePaths => {
+  if (!path.isAbsolute(rootDir)) {
+    rootDir = path.resolve(rootDir);
+  }
+  process.chdir(rootDir);
   const { configJSON } = createTSCompiler(rootDir);
   return {
     rootDir,
-    include: configJSON.config.include,
-    exclude: configJSON.config.exclude,
+    include: configJSON.config.include || [],
+    exclude: configJSON.config.exclude || [],
     extensions: [".ts", ".tsx"]
   };
 };
@@ -86,6 +91,11 @@ program
   .option("--project <path>")
   .option("-c, --commit")
   .option(
+    "--removeExisting",
+    "Whether existing @ts-ignore comments should be removed from the input files before re-adding necessary ignores",
+    false
+  )
+  .option(
     "--includeJSX",
     "Insert ignores into JSX -- may cause runtime changes!",
     true
@@ -101,12 +111,13 @@ program
     (f: string) => f.split(",")
   )
   .action(
-    (cmd: {
+    async (cmd: {
       project?: string;
       commit: boolean | undefined;
       exclude: string[] | undefined;
       includeJSX: boolean;
       files?: string[];
+      removeExisting: boolean | undefined;
     }) => {
       console.log("Ignoring Typescript errors...");
       const filePaths = constructPaths(cmd.project);
@@ -122,7 +133,9 @@ program
               exclude: [...filePaths.exclude, ...(cmd.exclude || [])]
             };
       console.log(paths);
-
+      if (cmd.removeExisting) {
+        await removeIgnores(paths);
+      }
       ignoreErrors(paths, !!cmd.commit, cmd.includeJSX);
     }
   );
