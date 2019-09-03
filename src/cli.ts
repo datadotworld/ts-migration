@@ -9,19 +9,24 @@ import path from "path";
 
 export interface FilePaths {
   rootDir: string;
+  projectDir: string;
   include: string[];
   exclude: string[];
   extensions: string[];
 }
 
-const constructPaths = (rootDir: string = process.cwd()): FilePaths => {
-  if (!path.isAbsolute(rootDir)) {
-    rootDir = path.resolve(rootDir);
+const constructPaths = (projectDir: string = process.cwd()): FilePaths => {
+  const rootDir = process.cwd()
+  if (!path.isAbsolute(projectDir)) {
+    projectDir = path.resolve(projectDir);
   }
-  process.chdir(rootDir);
-  const { configJSON } = createTSCompiler(rootDir);
+  if (rootDir !== projectDir) {
+    process.chdir(projectDir);
+  }
+  const { configJSON } = createTSCompiler(projectDir);
   return {
     rootDir,
+    projectDir,
     include: configJSON.config.include || [],
     exclude: configJSON.config.exclude || [],
     extensions: [".ts", ".tsx"]

@@ -33,7 +33,7 @@ export function createTSCompiler(rootDir: string) {
 
 export async function getDiagnostics(paths: FilePaths) {
   const files = await collectFiles(paths);
-  const { compilerOptions } = createTSCompiler(paths.rootDir);
+  const { compilerOptions } = createTSCompiler(paths.projectDir);
 
   const program = ts.createProgram(files, compilerOptions.options);
 
@@ -47,7 +47,7 @@ export async function getDiagnostics(paths: FilePaths) {
 
 export function getFilePath(paths: FilePaths, diagnostic: ts.Diagnostic) {
   const fileName = diagnostic.file!.fileName;
-  let filePath = path.join(paths.rootDir, fileName);
+  let filePath = path.join(paths.projectDir, fileName);
   if (!existsSync(filePath)) {
     filePath = fileName;
     if (!existsSync(filePath)) {

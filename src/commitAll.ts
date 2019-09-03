@@ -2,7 +2,7 @@ import simplegit from "simple-git/promise";
 import { FilePaths } from "./cli";
 
 export default async function commit(message: string, filePaths: FilePaths) {
-  const git = simplegit(filePaths.rootDir);
+  const git = simplegit(filePaths.projectDir);
   console.log(`Committing: "${message}"`);
   try {
     await git.add(".");

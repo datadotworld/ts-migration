@@ -1,6 +1,2 @@
-export default function collectFiles(paths: {
-    rootDir: string;
-    include: string[];
-    exclude: string[];
-    extensions: string[];
-}): Promise<string[]>;
+import { FilePaths } from "cli";
+export default function collectFiles(paths: FilePaths): Promise<string[]>;

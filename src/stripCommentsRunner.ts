@@ -31,7 +31,7 @@ export default async function run(
         comments || flowComments
       );
       count = count + countRemoved;
-      const formattedFileData = prettierFormat(fileData, paths.rootDir);
+      const formattedFileData = prettierFormat(fileData, paths.projectDir);
       writeFileSync(filePath, formattedFileData);
       successFiles.push(filePath);
     } catch (e) {
