@@ -19,12 +19,12 @@ export default async function process(
   shouldRename: boolean,
   filesFromCLI: string[] | undefined
 ) {
-  const git = simplegit(filePaths.rootDir);
+  const git = simplegit(filePaths.projectDir);
 
   const files = filesFromCLI || (await collectFiles(filePaths));
 
   console.log(`Converting ${files.length} files`);
-  const { successFiles, errorFiles } = await convert(files, filePaths.rootDir);
+  const { successFiles, errorFiles } = await convert(files, filePaths.projectDir);
 
   console.log(`${successFiles.length} converted successfully.`);
   console.log(`${errorFiles.length} errors:`);

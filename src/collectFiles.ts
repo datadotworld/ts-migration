@@ -3,6 +3,7 @@ import path from "path";
 
 import { promisify } from "util";
 import { resolve } from "path";
+import { FilePaths } from "cli";
 
 const readdir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
@@ -19,19 +20,14 @@ async function getFiles(dir: string): Promise<string[]> {
   return files.reduce((a, f) => a.concat(f), [] as string[]);
 }
 
-export default async function collectFiles(paths: {
-  rootDir: string;
-  include: string[];
-  exclude: string[];
-  extensions: string[];
-}) {
+export default async function collectFiles(paths: FilePaths) {
   const filesArr = await Promise.all(
     paths.include.map(async include => {
-      const isFile = (await stat(path.join(paths.rootDir, include))).isFile();
+      const isFile = (await stat(path.join(paths.projectDir, include))).isFile();
 
       return isFile
         ? [include]
-        : await getFiles(path.join(paths.rootDir, include));
+        : await getFiles(path.join(paths.projectDir, include));
     })
   );
   const files = filesArr.reduce((a, f) => a.concat(f), [] as string[]);

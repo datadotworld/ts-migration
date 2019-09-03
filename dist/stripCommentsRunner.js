@@ -33,7 +33,7 @@ function run(paths, comments, shouldComit) {
                 const code = fs_1.readFileSync(filePath, "utf8");
                 const [fileData, countRemoved] = stripComments_1.stripComments(code, comments || flowComments);
                 count = count + countRemoved;
-                const formattedFileData = prettierFormat_1.default(fileData, paths.rootDir);
+                const formattedFileData = prettierFormat_1.default(fileData, paths.projectDir);
                 fs_1.writeFileSync(filePath, formattedFileData);
                 successFiles.push(filePath);
             }

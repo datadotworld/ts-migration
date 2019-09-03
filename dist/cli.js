@@ -26,14 +26,18 @@ const ignoreFileErrorsRunner_1 = __importDefault(require("./ignoreFileErrorsRunn
 const convertCodebase_1 = __importDefault(require("./convertCodebase"));
 const checkRunner_1 = __importDefault(require("./checkRunner"));
 const path_1 = __importDefault(require("path"));
-const constructPaths = (rootDir = process.cwd()) => {
-    if (!path_1.default.isAbsolute(rootDir)) {
-        rootDir = path_1.default.resolve(rootDir);
+const constructPaths = (projectDir = process.cwd()) => {
+    const rootDir = process.cwd();
+    if (!path_1.default.isAbsolute(projectDir)) {
+        projectDir = path_1.default.resolve(projectDir);
     }
-    process.chdir(rootDir);
-    const { configJSON } = tsCompilerHelpers_1.createTSCompiler(rootDir);
+    if (rootDir !== projectDir) {
+        process.chdir(projectDir);
+    }
+    const { configJSON } = tsCompilerHelpers_1.createTSCompiler(projectDir);
     return {
         rootDir,
+        projectDir,
         include: configJSON.config.include || [],
         exclude: configJSON.config.exclude || [],
         extensions: [".ts", ".tsx"]

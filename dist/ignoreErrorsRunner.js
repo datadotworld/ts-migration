@@ -75,7 +75,7 @@ function compile(paths, shouldCommit, includeJSX) {
                 const filePath = tsCompilerHelpers_1.getFilePath(paths, fileDiagnostics[0]);
                 const modifiedCodeSplitByLine = fileDiagnostics.reduce((codeSplitByLine, diagnostic) => insertIgnore_1.insertIgnore(diagnostic, codeSplitByLine, includeJSX, paths.rootDir), fs_1.readFileSync(filePath, "utf8").split("\n"));
                 const fileData = modifiedCodeSplitByLine.join("\n");
-                const formattedFileData = prettierFormat_1.default(fileData, paths.rootDir);
+                const formattedFileData = prettierFormat_1.default(fileData, paths.projectDir);
                 fs_1.writeFileSync(filePath, formattedFileData);
                 successFiles.push(fileName);
             }

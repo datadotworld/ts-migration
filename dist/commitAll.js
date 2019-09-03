@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const promise_1 = __importDefault(require("simple-git/promise"));
 function commit(message, filePaths) {
     return __awaiter(this, void 0, void 0, function* () {
-        const git = promise_1.default(filePaths.rootDir);
+        const git = promise_1.default(filePaths.projectDir);
         console.log(`Committing: "${message}"`);
         try {
             yield git.add(".");

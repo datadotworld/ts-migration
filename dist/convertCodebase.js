@@ -22,10 +22,10 @@ const commitAll_1 = __importDefault(require("./commitAll"));
 const exists = util_1.promisify(fs_1.default.exists);
 function process(filePaths, shouldCommit, shouldRename, filesFromCLI) {
     return __awaiter(this, void 0, void 0, function* () {
-        const git = promise_1.default(filePaths.rootDir);
+        const git = promise_1.default(filePaths.projectDir);
         const files = filesFromCLI || (yield collectFiles_1.default(filePaths));
         console.log(`Converting ${files.length} files`);
-        const { successFiles, errorFiles } = yield converter_1.default(files, filePaths.rootDir);
+        const { successFiles, errorFiles } = yield converter_1.default(files, filePaths.projectDir);
         console.log(`${successFiles.length} converted successfully.`);
         console.log(`${errorFiles.length} errors:`);
         if (errorFiles.length)

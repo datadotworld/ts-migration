@@ -31,10 +31,10 @@ function getFiles(dir) {
 function collectFiles(paths) {
     return __awaiter(this, void 0, void 0, function* () {
         const filesArr = yield Promise.all(paths.include.map((include) => __awaiter(this, void 0, void 0, function* () {
-            const isFile = (yield stat(path_1.default.join(paths.rootDir, include))).isFile();
+            const isFile = (yield stat(path_1.default.join(paths.projectDir, include))).isFile();
             return isFile
                 ? [include]
-                : yield getFiles(path_1.default.join(paths.rootDir, include));
+                : yield getFiles(path_1.default.join(paths.projectDir, include));
         })));
         const files = filesArr.reduce((a, f) => a.concat(f), []);
         const filesWithExtensions = files.filter(f => {
