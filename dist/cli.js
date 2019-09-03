@@ -26,20 +26,22 @@ const ignoreFileErrorsRunner_1 = __importDefault(require("./ignoreFileErrorsRunn
 const convertCodebase_1 = __importDefault(require("./convertCodebase"));
 const checkRunner_1 = __importDefault(require("./checkRunner"));
 const path_1 = __importDefault(require("path"));
-const constructPaths = (projectDir = process.cwd()) => {
-    const rootDir = process.cwd();
-    if (!path_1.default.isAbsolute(projectDir)) {
-        projectDir = path_1.default.resolve(projectDir);
-    }
-    if (rootDir !== projectDir) {
+const constructPaths = (projectDir = '.') => {
+    // Ensure that the rootDir ends with the path separator
+    const rootDir = path_1.default.normalize(path_1.default.join(process.cwd(), path_1.default.sep));
+    const { configJSON } = tsCompilerHelpers_1.createTSCompiler(projectDir);
+    const include = (configJSON.config.include || []);
+    const exclude = (configJSON.config.exclude || []);
+    projectDir = path_1.default.resolve(projectDir);
+    if (projectDir !== rootDir) {
         process.chdir(projectDir);
     }
-    const { configJSON } = tsCompilerHelpers_1.createTSCompiler(projectDir);
     return {
-        rootDir,
+        // Ensure the rootDir ends with a trailing path separator
+        rootDir: path_1.default.normalize(path_1.default.join(rootDir, path_1.default.sep)),
         projectDir,
-        include: configJSON.config.include || [],
-        exclude: configJSON.config.exclude || [],
+        include,
+        exclude,
         extensions: [".ts", ".tsx"]
     };
 };

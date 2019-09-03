@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { FilePaths } from "./cli";
-export declare function createTSCompiler(rootDir: string): {
+export declare function createTSCompiler(projectDir: string): {
     configJSON: {
         config?: any;
         error?: ts.Diagnostic | undefined;

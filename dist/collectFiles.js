@@ -12,29 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const util_1 = require("util");
-const path_2 = require("path");
+const path_1 = require("path");
 const readdir = util_1.promisify(fs_1.default.readdir);
 const stat = util_1.promisify(fs_1.default.stat);
 function getFiles(dir) {
     return __awaiter(this, void 0, void 0, function* () {
         const subdirs = yield readdir(dir);
         const files = yield Promise.all(subdirs.map((subdir) => __awaiter(this, void 0, void 0, function* () {
-            const res = path_2.resolve(dir, subdir);
+            const res = path_1.resolve(dir, subdir);
             return (yield stat(res)).isDirectory() ? getFiles(res) : res;
         })));
-        // @ts-ignore
         return files.reduce((a, f) => a.concat(f), []);
     });
 }
 function collectFiles(paths) {
     return __awaiter(this, void 0, void 0, function* () {
         const filesArr = yield Promise.all(paths.include.map((include) => __awaiter(this, void 0, void 0, function* () {
-            const isFile = (yield stat(path_1.default.join(paths.projectDir, include))).isFile();
-            return isFile
-                ? [include]
-                : yield getFiles(path_1.default.join(paths.projectDir, include));
+            const isFile = (yield stat(include)).isFile();
+            return isFile ? [include] : yield getFiles(include);
         })));
         const files = filesArr.reduce((a, f) => a.concat(f), []);
         const filesWithExtensions = files.filter(f => {

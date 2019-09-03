@@ -15,16 +15,16 @@ const typescript_1 = __importDefault(require("typescript"));
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const collectFiles_1 = __importDefault(require("./collectFiles"));
-function createTSCompiler(rootDir) {
-    const configPath = path_1.default.join(rootDir, "tsconfig.json");
+function createTSCompiler(projectDir) {
+    const configPath = path_1.default.join(projectDir, "tsconfig.json");
     const configJSON = typescript_1.default.readConfigFile(configPath, typescript_1.default.sys.readFile);
     let extendedCompilerOptions = {};
     if (configJSON.config.extends) {
-        const extendedConfigPath = path_1.default.join(rootDir, configJSON.config.extends);
+        const extendedConfigPath = path_1.default.join(projectDir, configJSON.config.extends);
         const extendedConfigJSON = typescript_1.default.readConfigFile(extendedConfigPath, typescript_1.default.sys.readFile);
         extendedCompilerOptions = extendedConfigJSON.config.compilerOptions;
     }
-    const compilerOptions = typescript_1.default.convertCompilerOptionsFromJson(Object.assign({}, extendedCompilerOptions, configJSON.config.compilerOptions), rootDir);
+    const compilerOptions = typescript_1.default.convertCompilerOptionsFromJson(Object.assign({}, extendedCompilerOptions, configJSON.config.compilerOptions), projectDir);
     return {
         configJSON,
         compilerOptions

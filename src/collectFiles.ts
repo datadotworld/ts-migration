@@ -1,6 +1,4 @@
 import fs from "fs";
-import path from "path";
-
 import { promisify } from "util";
 import { resolve } from "path";
 import { FilePaths } from "cli";
@@ -16,18 +14,15 @@ async function getFiles(dir: string): Promise<string[]> {
       return (await stat(res)).isDirectory() ? getFiles(res) : res;
     })
   );
-  // @ts-ignore
-  return files.reduce((a, f) => a.concat(f), [] as string[]);
+  return files.reduce((a: string[], f) => a.concat(f), [] as string[]);
 }
 
 export default async function collectFiles(paths: FilePaths) {
   const filesArr = await Promise.all(
     paths.include.map(async include => {
-      const isFile = (await stat(path.join(paths.projectDir, include))).isFile();
+      const isFile = (await stat(include)).isFile();
 
-      return isFile
-        ? [include]
-        : await getFiles(path.join(paths.projectDir, include));
+      return isFile ? [include] : await getFiles(include);
     })
   );
   const files = filesArr.reduce((a, f) => a.concat(f), [] as string[]);

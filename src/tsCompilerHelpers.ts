@@ -5,13 +5,13 @@ import path from "path";
 import collectFiles from "./collectFiles";
 import { FilePaths } from "./cli";
 
-export function createTSCompiler(rootDir: string) {
-  const configPath = path.join(rootDir, "tsconfig.json");
+export function createTSCompiler(projectDir: string) {
+  const configPath = path.join(projectDir, "tsconfig.json");
   const configJSON = ts.readConfigFile(configPath, ts.sys.readFile);
 
   let extendedCompilerOptions = {};
   if (configJSON.config.extends) {
-    const extendedConfigPath = path.join(rootDir, configJSON.config.extends);
+    const extendedConfigPath = path.join(projectDir, configJSON.config.extends);
     const extendedConfigJSON = ts.readConfigFile(
       extendedConfigPath,
       ts.sys.readFile
@@ -22,7 +22,7 @@ export function createTSCompiler(rootDir: string) {
 
   const compilerOptions = ts.convertCompilerOptionsFromJson(
     { ...extendedCompilerOptions, ...configJSON.config.compilerOptions },
-    rootDir
+    projectDir
   );
 
   return {
