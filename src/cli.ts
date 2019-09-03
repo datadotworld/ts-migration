@@ -15,20 +15,22 @@ export interface FilePaths {
   extensions: string[];
 }
 
-const constructPaths = (projectDir: string = process.cwd()): FilePaths => {
-  const rootDir = process.cwd()
-  if (!path.isAbsolute(projectDir)) {
-    projectDir = path.resolve(projectDir);
-  }
-  if (rootDir !== projectDir) {
+const constructPaths = (projectDir: string = '.'): FilePaths => {
+  // Ensure that the rootDir ends with the path separator
+  const rootDir = path.normalize(path.join(process.cwd(), path.sep));
+  const { configJSON } = createTSCompiler(projectDir);
+  const include = (configJSON.config.include || []);
+  const exclude = (configJSON.config.exclude || []);
+  projectDir = path.resolve(projectDir);
+  if (projectDir !== rootDir) {
     process.chdir(projectDir);
   }
-  const { configJSON } = createTSCompiler(projectDir);
   return {
-    rootDir,
+    // Ensure the rootDir ends with a trailing path separator
+    rootDir: path.normalize(path.join(rootDir, path.sep)),
     projectDir,
-    include: configJSON.config.include || [],
-    exclude: configJSON.config.exclude || [],
+    include,
+    exclude,
     extensions: [".ts", ".tsx"]
   };
 };
