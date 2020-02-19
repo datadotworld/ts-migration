@@ -38,6 +38,7 @@ function getLine(diagnostic: ts.Diagnostic, position?: number) {
 
 function specificIgnoreText(diagnostic: ts.Diagnostic) {
   const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, ";");
+  const code = diagnostic.code ? ` (${diagnostic.code})` : "";
 
   const missingTypes = message.match(
     /^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/
@@ -45,14 +46,14 @@ function specificIgnoreText(diagnostic: ts.Diagnostic) {
   if (missingTypes) {
     const packageName = `@types/${missingTypes[1]}`;
     missingTypesPackages.add(packageName);
-    return `Missing "${packageName}"`;
+    return `Missing "${packageName}"${code}`;
   }
 
   if (message.endsWith(" has no default export.")) {
-    return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
+    return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.${code}`;
   }
 
-  return message;
+  return `${message}${code}`;
 }
 
 function nodeContainsTSIgnore(node: ts.Node): boolean {

@@ -41,16 +41,17 @@ function getLine(diagnostic, position) {
 }
 function specificIgnoreText(diagnostic) {
     const message = typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, ";");
+    const code = diagnostic.code ? ` (${diagnostic.code})` : "";
     const missingTypes = message.match(/^Could not find a declaration file for module '(([a-z]|[A-Z]|[0-9]|\-|\.|\@|\/)*)'/);
     if (missingTypes) {
         const packageName = `@types/${missingTypes[1]}`;
         missingTypesPackages.add(packageName);
-        return `Missing "${packageName}"`;
+        return `Missing "${packageName}"${code}`;
     }
     if (message.endsWith(" has no default export.")) {
-        return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.`;
+        return `Use "import * as Foo from 'foo'" syntax if 'foo' does not export a default value.${code}`;
     }
-    return message;
+    return `${message}${code}`;
 }
 function nodeContainsTSIgnore(node) {
     return typescript_1.default.isJsxText(node) && node.text.includes(IGNORE_TEXT);
