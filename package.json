@@ -9,11 +9,8 @@
   },
   "bin": "index.js",
   "main": "index.js",
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "version": "0.2.0",
+  "files": ["dist", "README.md"],
+  "version": "0.3.0",
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
@@ -21,11 +18,7 @@
     "watch": "tsc --watch",
     "dev-cli": "node -r ts-node/register --inspect src/cli.ts"
   },
-  "keywords": [
-    "babel",
-    "flow",
-    "typescript"
-  ],
+  "keywords": ["babel", "flow", "typescript"],
   "repository": {
     "type": "git",
     "url": "https://github.com/rgoldfinger-quizlet/babel-plugin-flow-to-typescript.git"
@@ -73,13 +66,6 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
   }
 }
