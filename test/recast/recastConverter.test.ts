@@ -19,8 +19,8 @@ describe("recast converter", () => {
   runner([
     {
       title: "preserves comments above imports",
-      code: `// @flow\nimport * as React from "react";`,
-      output: `// @flow
+      code: `// @wow\nimport * as React from "react";`,
+      output: `// @wow
 import * as React from "react";`
     },
     {
