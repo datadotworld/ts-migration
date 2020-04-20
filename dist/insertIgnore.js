@@ -2,16 +2,10 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
-const utils = __importStar(require("tsutils"));
+// import * as utils from "tsutils";
+// import { NodeWrap } from "tsutils";
 const IGNORE_TEXT = "// @ts-ignore";
 const missingTypesPackages = new Set();
 // JsxElement = 260,
@@ -69,8 +63,11 @@ function getMissingTypePackages() {
 }
 exports.getMissingTypePackages = getMissingTypePackages;
 function insertIgnore(diagnostic, codeSplitByLine, includeJSX, rootDir) {
-    const convertedAST = utils.convertAst(diagnostic.file);
-    const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
+    // const convertedAST = utils.convertAst(diagnostic.file!);
+    // const n = utils.getWrappedNodeAtPosition(
+    //   convertedAST.wrapped,
+    //   diagnostic.start!
+    // );
     const line = getLine(diagnostic);
     // const isInJSX = findParentJSX(n);
     if (!includeJSX) {
