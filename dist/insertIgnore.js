@@ -25,16 +25,18 @@ const missingTypesPackages = new Set();
 // JsxAttributes = 268,
 // JsxSpreadAttribute = 269,
 // JsxExpression = 270,
-function findParentJSX(n) {
-    if (n) {
-        if (n.kind >= typescript_1.default.SyntaxKind.JsxElement &&
-            n.kind <= typescript_1.default.SyntaxKind.JsxExpression) {
-            return [n.kind, n];
-        }
-        return findParentJSX(n.parent);
-    }
-    return null;
-}
+// function findParentJSX(n: NodeWrap | undefined): [number, NodeWrap] | null {
+//   if (n) {
+//     if (
+//       n.kind >= ts.SyntaxKind.JsxElement &&
+//       n.kind <= ts.SyntaxKind.JsxExpression
+//     ) {
+//       return [n.kind, n];
+//     }
+//     return findParentJSX(n.parent);
+//   }
+//   return null;
+// }
 function getLine(diagnostic, position) {
     const { line } = diagnostic.file.getLineAndCharacterOfPosition(position || diagnostic.start);
     return line;
@@ -70,8 +72,8 @@ function insertIgnore(diagnostic, codeSplitByLine, includeJSX, rootDir) {
     const convertedAST = utils.convertAst(diagnostic.file);
     const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
     const line = getLine(diagnostic);
-    const isInJSX = findParentJSX(n);
-    if (isInJSX && !includeJSX) {
+    // const isInJSX = findParentJSX(n);
+    if (!includeJSX) {
         // Don't add ignores in JSX since it's too hard.
         return codeSplitByLine;
     }

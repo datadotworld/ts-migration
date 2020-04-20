@@ -1,6 +1,6 @@
 import ts from "typescript";
-import * as utils from "tsutils";
-import { NodeWrap } from "tsutils";
+// import * as utils from "tsutils";
+// import { NodeWrap } from "tsutils";
 
 const IGNORE_TEXT = "// @ts-ignore";
 const missingTypesPackages = new Set<string>();
@@ -78,11 +78,11 @@ export function insertIgnore(
   includeJSX: boolean,
   rootDir: string
 ) {
-  const convertedAST = utils.convertAst(diagnostic.file!);
-  const n = utils.getWrappedNodeAtPosition(
-    convertedAST.wrapped,
-    diagnostic.start!
-  );
+  // const convertedAST = utils.convertAst(diagnostic.file!);
+  // const n = utils.getWrappedNodeAtPosition(
+  //   convertedAST.wrapped,
+  //   diagnostic.start!
+  // );
   const line = getLine(diagnostic);
 
   // const isInJSX = findParentJSX(n);
