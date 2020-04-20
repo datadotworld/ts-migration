@@ -9,7 +9,10 @@
   },
   "bin": "index.js",
   "main": "index.js",
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "version": "0.3.0",
   "scripts": {
     "test": "jest",
@@ -18,20 +21,24 @@
     "watch": "tsc --watch",
     "dev-cli": "node -r ts-node/register --inspect src/cli.ts"
   },
-  "keywords": ["babel", "flow", "typescript"],
+  "keywords": [
+    "babel",
+    "flow",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/rgoldfinger-quizlet/babel-plugin-flow-to-typescript.git"
   },
   "peerDependencies": {
-    "@babel/core": "^7.2.2",
-    "typescript": ">=3.0"
+    "@babel/core": "7.5.5",
+    "typescript": "3.8.3"
   },
   "dependencies": {
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "7.2.0",
     "babel-plugin-flow-to-typescript": "git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f",
-    "@babel/traverse": "^7.2.3",
-    "@babel/types": "^7.2.2",
+    "@babel/traverse": "7.5.5",
+    "@babel/types": "7.5.5",
     "commander": "2.20.0",
     "lodash": "^4.17.11",
     "prettier": "^1.16.4",
@@ -40,10 +47,10 @@
     "tsutils": "^3.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
+    "@babel/core": "7.5.5",
     "@types/babel__core": "7.1.0",
     "@types/babel-core": "^6.25.3",
-    "@types/babel-types": "^7.0.1",
+    "@types/babel-types": "7.0.7",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
     "@types/node": "^10.12.18",
@@ -53,7 +60,7 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-tester": "^5.0.0",
     "jest": "^24.8.0",
-    "react": "^16.8.6",
+    "react": "16.8.3",
     "regenerator-runtime": "^0.13.1",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.0.3",
@@ -66,6 +73,13 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
