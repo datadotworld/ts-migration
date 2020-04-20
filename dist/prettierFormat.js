@@ -10,7 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prettier = __importStar(require("prettier"));
 function prettierFormat(code, rootDir) {
     const prettierConfig = prettier.resolveConfig.sync(rootDir);
-    return prettier.format(code, Object.assign({}, prettierConfig, { parser: "typescript" }));
+    return prettier.format(code, Object.assign(Object.assign({}, prettierConfig), { parser: "typescript" }));
 }
 exports.default = prettierFormat;
 //# sourceMappingURL=prettierFormat.js.map

@@ -53,9 +53,9 @@ function specificIgnoreText(diagnostic) {
     }
     return `${message}${code}`;
 }
-function nodeContainsTSIgnore(node) {
-    return typescript_1.default.isJsxText(node) && node.text.includes(IGNORE_TEXT);
-}
+// function nodeContainsTSIgnore(node: ts.Node): boolean {
+//   return ts.isJsxText(node) && node.text.includes(IGNORE_TEXT);
+// }
 function ignoreText(diagnostic, rootDir) {
     const specificText = specificIgnoreText(diagnostic);
     return specificText == null
@@ -76,23 +76,27 @@ function insertIgnore(diagnostic, codeSplitByLine, includeJSX, rootDir) {
         return codeSplitByLine;
     }
     const ignoreComment = ignoreText(diagnostic, rootDir);
-    const maybeResult = [
-        ...codeSplitByLine.slice(0, line),
-        IGNORE_TEXT,
-        ...codeSplitByLine.slice(line)
-    ];
-    if (isInJSX) {
-        const sourceFile = typescript_1.default.createSourceFile(diagnostic.file.fileName, maybeResult.join("\n"), typescript_1.default.ScriptTarget.ESNext);
-        const newConvertedAst = utils.convertAst(sourceFile);
-        if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
-            return [
-                ...codeSplitByLine.slice(0, line),
-                "{ /*",
-                `${ignoreComment} */ }`,
-                ...codeSplitByLine.slice(line)
-            ];
-        }
-    }
+    // const maybeResult = [
+    //   ...codeSplitByLine.slice(0, line),
+    //   IGNORE_TEXT,
+    //   ...codeSplitByLine.slice(line)
+    // ];
+    // if (isInJSX) {
+    //   const sourceFile = ts.createSourceFile(
+    //     diagnostic.file!.fileName,
+    //     maybeResult.join("\n"),
+    //     ts.ScriptTarget.ESNext
+    //   );
+    //   const newConvertedAst = utils.convertAst(sourceFile);
+    //   if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
+    //     return [
+    //       ...codeSplitByLine.slice(0, line),
+    //       "{ /*",
+    //       `${ignoreComment} */ }`,
+    //       ...codeSplitByLine.slice(line)
+    //     ];
+    //   }
+    // }
     // Ensure proper sequencing of eslint ignores and ts-ignores
     if (codeSplitByLine.length > 0 &&
         line > 0 &&
