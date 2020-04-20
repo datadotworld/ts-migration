@@ -58,7 +58,7 @@
     "ts-jest": "^24.0.2",
     "ts-node": "^8.0.3",
     "tslint": "^5.9.1",
-    "typescript": "3.8.2"
+    "typescript": "3.8.3"
   },
   "jest": {
     "testURL": "http://localhost/",
