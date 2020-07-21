@@ -2,7 +2,7 @@ import fs from "fs";
 import ts from "typescript";
 import path from "path";
 
-import insertIgnore from "../src/insertIgnore";
+import { insertIgnore } from "../src/insertIgnore";
 import { createTSCompiler } from "../src/tsCompilerHelpers";
 
 const { compilerOptions } = createTSCompiler(path.join(__dirname, "../"));
@@ -20,7 +20,7 @@ describe("insertIgnore", () => {
     const testCode = fs.readFileSync(fixturePath, "utf8");
     let codeSplitByLine = testCode.split("\n");
     diagnostics.forEach((diagnostic, _errorIndex) => {
-      codeSplitByLine = insertIgnore(diagnostic, codeSplitByLine, false);
+      codeSplitByLine = insertIgnore(diagnostic, codeSplitByLine, false, "./");
     });
     expect(codeSplitByLine.join("\n")).toMatchSnapshot();
   });
@@ -36,7 +36,7 @@ describe("insertIgnore", () => {
     const testCode = fs.readFileSync(fixturePath, "utf8");
     let codeSplitByLine = testCode.split("\n");
     diagnostics.forEach((diagnostic, _errorIndex) => {
-      codeSplitByLine = insertIgnore(diagnostic, codeSplitByLine, true);
+      codeSplitByLine = insertIgnore(diagnostic, codeSplitByLine, true, "./");
     });
     expect(codeSplitByLine.join("\n")).toMatchSnapshot();
   });

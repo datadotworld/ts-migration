@@ -86,7 +86,7 @@ export function insertIgnore(
   const line = getLine(diagnostic);
 
   const isInJSX = findParentJSX(n);
-  if (isInJSX && !includeJSX) {
+  if (!includeJSX) {
     // Don't add ignores in JSX since it's too hard.
     return codeSplitByLine;
   }

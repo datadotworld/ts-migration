@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.stripComments = void 0;
 function stripComments(code, comments) {
     const codeSplitByLine = code.split("\n");
     let count = 0;
