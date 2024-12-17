@@ -13,7 +13,7 @@
     "dist",
     "README.md"
   ],
-  "version": "0.5.0",
+  "version": "0.6.0",
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
@@ -32,43 +32,45 @@
   },
   "peerDependencies": {
     "@babel/core": "7.5.5",
-    "typescript": "4.2.4"
+    "typescript": "4.9.5"
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "7.2.0",
-    "babel-plugin-flow-to-typescript": "git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f",
-    "@babel/traverse": "7.5.5",
+    "@babel/traverse": "^7.26.4",
     "@babel/types": "7.17.0",
+    "babel-plugin-flow-to-typescript": "git+https://github.com/Kiikurage/babel-plugin-flow-to-typescript.git#1375d207e9dd85e9e697cf3d90301171050ca77f",
     "commander": "2.20.0",
-    "lodash": "4.17.15",
+    "lodash": "^4.17.21",
     "prettier": "1.19.1",
     "recast": "0.17.6",
-    "simple-git": "1.132.0",
+    "simple-git": "3.27.0",
     "tsutils": "3.17.1"
   },
   "devDependencies": {
-    "@babel/core": "7.5.5",
+    "@babel/core": "7.8.0",
+    "@types/babel__core": "7.1.0",
     "@types/babel-core": "6.25.6",
     "@types/babel-types": "7.0.7",
-    "@types/babel__core": "7.1.0",
     "@types/jest": "24.9.1",
     "@types/lodash": "4.14.150",
     "@types/node": "10.17.20",
     "@types/prettier": "1.19.1",
     "@types/react": "16.9.36",
     "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "24.9.0",
+    "babel-jest": "28.0.0",
     "babel-plugin-tester": "5.5.2",
-    "jest": "24.9.0",
+    "jest": "28.0.0",
     "react": "16.14.0",
     "regenerator-runtime": "0.13.5",
-    "ts-jest": "26.1.0",
+    "ts-jest": "28.0.8",
     "ts-node": "8.8.2",
     "tslint": "5.20.1",
-    "typescript": "4.2.4"
+    "typescript": "4.9.5"
   },
   "jest": {
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost/"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
