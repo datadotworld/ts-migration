@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -14,7 +18,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -61,27 +65,28 @@ const recastPlugin = function (rootDir) {
         generatorOverride: buildRecastGenerate(rootDir)
     };
 };
-exports.babelOptions = (rootDir) => ({
+const babelOptions = (rootDir) => ({
     configFile: false,
     plugins: [recastPlugin(rootDir), babel_plugin_flow_to_typescript_1.default, plugin_syntax_dynamic_import_1.default]
 });
+exports.babelOptions = babelOptions;
 const successFiles = [];
 const errorFiles = [];
 function convert(files, rootDir) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield util_1.asyncForEach(files, (path, i) => __awaiter(this, void 0, void 0, function* () {
+        yield (0, util_1.asyncForEach)(files, (path, i) => __awaiter(this, void 0, void 0, function* () {
             console.log(`${i} of ${files.length}: Converting ${path}`);
             let res;
             try {
-                res = yield babel.transformFileAsync(path, exports.babelOptions(rootDir));
-                res.code = stripComments_1.stripComments(res.code, ['// @flow', '// @noflow'])[0];
+                res = yield babel.transformFileAsync(path, (0, exports.babelOptions)(rootDir));
+                res.code = (0, stripComments_1.stripComments)(res.code, ['// @flow', '// @noflow'])[0];
             }
             catch (err) {
                 console.log(err);
                 errorFiles.push(path);
                 return;
             }
-            fs_1.writeFileSync(path, res.code);
+            (0, fs_1.writeFileSync)(path, res.code);
             successFiles.push(path);
         }));
         return {

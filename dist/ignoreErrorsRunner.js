@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -14,7 +18,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -42,13 +46,13 @@ const collectFiles_1 = __importDefault(require("./collectFiles"));
 const util_1 = require("util");
 const successFiles = [];
 const errorFiles = [];
-const readFile = util_1.promisify(fs_1.default.readFile);
-const writeFile = util_1.promisify(fs_1.default.writeFile);
+const readFile = (0, util_1.promisify)(fs_1.default.readFile);
+const writeFile = (0, util_1.promisify)(fs_1.default.writeFile);
 function removeIgnores(paths) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("Removing all existing @ts-ignores from input files");
         const start = new Date();
-        const files = yield collectFiles_1.default(paths);
+        const files = yield (0, collectFiles_1.default)(paths);
         let modifiedCount = 0;
         yield Promise.all(files.map((file) => __awaiter(this, void 0, void 0, function* () {
             const contents = yield readFile(file, "utf8");
@@ -79,18 +83,18 @@ function removeIgnores(paths) {
 exports.removeIgnores = removeIgnores;
 function compile(paths, shouldCommit, includeJSX) {
     return __awaiter(this, void 0, void 0, function* () {
-        const diagnostics = yield tsCompilerHelpers_1.getDiagnostics(paths);
+        const diagnostics = yield (0, tsCompilerHelpers_1.getDiagnostics)(paths);
         const diagnosticsWithFile = diagnostics.filter(d => !!d.file && !paths.exclude.some(e => d.file.fileName.includes(e)));
-        const diagnosticsGroupedByFile = lodash_1.groupBy(diagnosticsWithFile, d => d.file.fileName);
+        const diagnosticsGroupedByFile = (0, lodash_1.groupBy)(diagnosticsWithFile, d => d.file.fileName);
         Object.keys(diagnosticsGroupedByFile).forEach((fileName, i, arr) => __awaiter(this, void 0, void 0, function* () {
-            const fileDiagnostics = lodash_1.uniqBy(diagnosticsGroupedByFile[fileName], d => d.file.getLineAndCharacterOfPosition(d.start)).reverse();
+            const fileDiagnostics = (0, lodash_1.uniqBy)(diagnosticsGroupedByFile[fileName], d => d.file.getLineAndCharacterOfPosition(d.start)).reverse();
             console.log(`${i + 1} of ${arr.length}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}`);
             try {
-                const filePath = tsCompilerHelpers_1.getFilePath(paths, fileDiagnostics[0]);
-                const modifiedCodeSplitByLine = fileDiagnostics.reduce((codeSplitByLine, diagnostic) => insertIgnore_1.insertIgnore(diagnostic, codeSplitByLine, includeJSX, paths.rootDir), fs_1.readFileSync(filePath, "utf8").split("\n"));
+                const filePath = (0, tsCompilerHelpers_1.getFilePath)(paths, fileDiagnostics[0]);
+                const modifiedCodeSplitByLine = fileDiagnostics.reduce((codeSplitByLine, diagnostic) => (0, insertIgnore_1.insertIgnore)(diagnostic, codeSplitByLine, includeJSX, paths.rootDir), (0, fs_1.readFileSync)(filePath, "utf8").split("\n"));
                 const fileData = modifiedCodeSplitByLine.join("\n");
-                const formattedFileData = prettierFormat_1.default(fileData, paths.projectDir);
-                fs_1.writeFileSync(filePath, formattedFileData);
+                const formattedFileData = (0, prettierFormat_1.default)(fileData, paths.projectDir);
+                (0, fs_1.writeFileSync)(filePath, formattedFileData);
                 successFiles.push(fileName);
             }
             catch (e) {
@@ -99,10 +103,10 @@ function compile(paths, shouldCommit, includeJSX) {
             }
         }));
         if (shouldCommit) {
-            yield commitAll_1.default(":see_no_evil: ignore errors", paths);
+            yield (0, commitAll_1.default)(":see_no_evil: ignore errors", paths);
         }
         console.log(`${successFiles.length} files with errors ignored successfully.`);
-        const missingTypePackages = insertIgnore_1.getMissingTypePackages();
+        const missingTypePackages = (0, insertIgnore_1.getMissingTypePackages)();
         if (missingTypePackages.length > 0) {
             console.log(`Consider adding these package(s):\n${missingTypePackages.join(" ")}`);
         }

@@ -22,18 +22,18 @@ const successFiles = [];
 const errorFiles = [];
 function run(paths, shouldCommit) {
     return __awaiter(this, void 0, void 0, function* () {
-        const diagnostics = yield tsCompilerHelpers_1.getDiagnostics(paths);
+        const diagnostics = yield (0, tsCompilerHelpers_1.getDiagnostics)(paths);
         const diagnosticsWithFile = diagnostics.filter(d => !!d.file);
-        const diagnosticsGroupedByFile = lodash_1.groupBy(diagnosticsWithFile, d => d.file.fileName);
+        const diagnosticsGroupedByFile = (0, lodash_1.groupBy)(diagnosticsWithFile, d => d.file.fileName);
         Object.keys(diagnosticsGroupedByFile).forEach((fileName, i, arr) => __awaiter(this, void 0, void 0, function* () {
             const fileDiagnostics = diagnosticsGroupedByFile[fileName];
             console.log(`${i} of ${arr.length - 1}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}`);
             try {
-                const filePath = tsCompilerHelpers_1.getFilePath(paths, fileDiagnostics[0]);
-                let codeSplitByLine = fs_1.readFileSync(filePath, "utf8").split("\n");
+                const filePath = (0, tsCompilerHelpers_1.getFilePath)(paths, fileDiagnostics[0]);
+                let codeSplitByLine = (0, fs_1.readFileSync)(filePath, "utf8").split("\n");
                 codeSplitByLine.unshift(`${exports.ERROR_COMMENT}${fileDiagnostics.length}`);
                 const fileData = codeSplitByLine.join("\n");
-                fs_1.writeFileSync(filePath, fileData);
+                (0, fs_1.writeFileSync)(filePath, fileData);
                 successFiles.push(fileName);
             }
             catch (e) {
@@ -42,7 +42,7 @@ function run(paths, shouldCommit) {
             }
         }));
         if (shouldCommit) {
-            yield commitAll_1.default("Ignore File Errors", paths);
+            yield (0, commitAll_1.default)("Ignore File Errors", paths);
         }
         console.log(`${successFiles.length} files with errors ignored successfully.`);
         if (errorFiles.length) {

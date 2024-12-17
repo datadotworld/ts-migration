@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -14,7 +18,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -42,7 +46,7 @@ const path_1 = __importDefault(require("path"));
 const constructPaths = (projectDir = '.') => {
     // Ensure that the rootDir ends with the path separator
     const rootDir = path_1.default.normalize(path_1.default.join(process.cwd(), path_1.default.sep));
-    const { configJSON } = tsCompilerHelpers_1.createTSCompiler(projectDir);
+    const { configJSON } = (0, tsCompilerHelpers_1.createTSCompiler)(projectDir);
     const include = (configJSON.config.include || []);
     const exclude = (configJSON.config.exclude || []);
     projectDir = path_1.default.resolve(projectDir);
@@ -68,7 +72,7 @@ commander_1.default
     const filePaths = constructPaths(cmd.project);
     if (cmd.comments)
         console.log("Removing comments: ", cmd.comments);
-    stripCommentsRunner_1.default(filePaths, cmd.comments, !!cmd.commit);
+    (0, stripCommentsRunner_1.default)(filePaths, cmd.comments, !!cmd.commit);
 });
 commander_1.default
     .command("convert-codebase")
@@ -83,7 +87,7 @@ commander_1.default
     const filePaths = constructPaths(cmd.project);
     const paths = Object.assign(Object.assign({}, filePaths), { exclude: [...filePaths.exclude, ...(cmd.exclude || [])], extensions: [".js", ".jsx"] });
     console.log(paths);
-    convertCodebase_1.default(paths, !!cmd.commit, !!cmd.rename, cmd.files);
+    (0, convertCodebase_1.default)(paths, !!cmd.commit, !!cmd.rename, cmd.files);
 });
 commander_1.default
     .command("ignore-errors")
@@ -100,9 +104,9 @@ commander_1.default
         ? Object.assign(Object.assign({}, filePaths), { include: [...cmd.files], exclude: [] }) : Object.assign(Object.assign({}, filePaths), { exclude: [...filePaths.exclude, ...(cmd.exclude || [])] });
     console.log(paths);
     if (cmd.removeExisting) {
-        yield ignoreErrorsRunner_1.removeIgnores(paths);
+        yield (0, ignoreErrorsRunner_1.removeIgnores)(paths);
     }
-    ignoreErrorsRunner_1.default(paths, !!cmd.commit, cmd.includeJSX);
+    (0, ignoreErrorsRunner_1.default)(paths, !!cmd.commit, cmd.includeJSX);
 }));
 commander_1.default
     .command("ignore-file-errors")
@@ -111,7 +115,7 @@ commander_1.default
     .action((cmd) => {
     console.log("Inserting custom ts-ignore pragmas...");
     const filePaths = constructPaths(cmd.project);
-    ignoreFileErrorsRunner_1.default(filePaths, !!cmd.commit);
+    (0, ignoreFileErrorsRunner_1.default)(filePaths, !!cmd.commit);
 });
 commander_1.default
     .command("check-types")
@@ -120,7 +124,7 @@ commander_1.default
     .action((cmd) => {
     console.log("Checking Typescript types and skipping ignored files...");
     const filePaths = constructPaths(cmd.project);
-    checkRunner_1.default(filePaths);
+    (0, checkRunner_1.default)(filePaths);
 });
 commander_1.default.parse(process.argv);
 //# sourceMappingURL=cli.js.map

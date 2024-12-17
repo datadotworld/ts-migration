@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const util_1 = require("util");
 const path_1 = require("path");
-const readdir = util_1.promisify(fs_1.default.readdir);
-const stat = util_1.promisify(fs_1.default.stat);
+const readdir = (0, util_1.promisify)(fs_1.default.readdir);
+const stat = (0, util_1.promisify)(fs_1.default.stat);
 function getFiles(dir) {
     return __awaiter(this, void 0, void 0, function* () {
         const subdirs = yield readdir(dir);
         const files = yield Promise.all(subdirs.map((subdir) => __awaiter(this, void 0, void 0, function* () {
-            const res = path_1.resolve(dir, subdir);
+            const res = (0, path_1.resolve)(dir, subdir);
             return (yield stat(res)).isDirectory() ? getFiles(res) : res;
         })));
         return files.reduce((a, f) => a.concat(f), []);
