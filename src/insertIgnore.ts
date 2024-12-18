@@ -120,7 +120,7 @@ export function insertIgnore(
   if (
     codeSplitByLine.length > 0 &&
     line > 0 &&
-    codeSplitByLine[line - 1]!.includes("// eslint-disable-next-line")
+    codeSplitByLine[line - 1].includes("// eslint-disable-next-line")
   ) {
     return [
       ...codeSplitByLine.slice(0, line - 1),

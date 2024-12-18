@@ -23,16 +23,16 @@ const filesWithTooManyIgnoredErrors = [];
 let skippedErrorCount = 0;
 function run(paths) {
     return __awaiter(this, void 0, void 0, function* () {
-        const diagnostics = yield tsCompilerHelpers_1.getDiagnostics(paths);
-        const [diagnosticsWithFile, diagnosticsWithoutFile] = lodash_1.partition(diagnostics, d => !!d.file);
+        const diagnostics = yield (0, tsCompilerHelpers_1.getDiagnostics)(paths);
+        const [diagnosticsWithFile, diagnosticsWithoutFile] = (0, lodash_1.partition)(diagnostics, d => !!d.file);
         errorsToShow.push(...diagnosticsWithoutFile);
-        const diagnosticsGroupedByFile = lodash_1.groupBy(diagnosticsWithFile, d => d.file.fileName);
+        const diagnosticsGroupedByFile = (0, lodash_1.groupBy)(diagnosticsWithFile, d => d.file.fileName);
         Object.keys(diagnosticsGroupedByFile).forEach((fileName) => __awaiter(this, void 0, void 0, function* () {
             const fileDiagnostics = diagnosticsGroupedByFile[fileName];
             const actualErrorCount = fileDiagnostics.length;
             try {
-                const filePath = tsCompilerHelpers_1.getFilePath(paths, fileDiagnostics[0]);
-                let codeSplitByLine = fs_1.readFileSync(filePath, "utf8").split("\n");
+                const filePath = (0, tsCompilerHelpers_1.getFilePath)(paths, fileDiagnostics[0]);
+                let codeSplitByLine = (0, fs_1.readFileSync)(filePath, "utf8").split("\n");
                 const firstLine = codeSplitByLine[0];
                 const firstLineIsIgnore = firstLine.startsWith(ignoreFileErrorsRunner_1.ERROR_COMMENT);
                 if (firstLineIsIgnore) {

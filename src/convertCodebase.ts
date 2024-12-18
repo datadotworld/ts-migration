@@ -2,8 +2,8 @@ import pathUtils from "path";
 
 import fs from "fs";
 
+import { simpleGit } from "simple-git";
 import { promisify } from "util";
-import simplegit from "simple-git/promise";
 
 import collectFiles from "./collectFiles";
 import convert from "./converter";
@@ -19,12 +19,15 @@ export default async function process(
   shouldRename: boolean,
   filesFromCLI: string[] | undefined
 ) {
-  const git = simplegit(filePaths.projectDir);
+  const git = simpleGit(filePaths.projectDir);
 
   const files = filesFromCLI || (await collectFiles(filePaths));
 
   console.log(`Converting ${files.length} files`);
-  const { successFiles, errorFiles } = await convert(files, filePaths.projectDir);
+  const { successFiles, errorFiles } = await convert(
+    files,
+    filePaths.projectDir
+  );
 
   console.log(`${successFiles.length} converted successfully.`);
   console.log(`${errorFiles.length} errors:`);
@@ -42,23 +45,19 @@ export default async function process(
     const snapsFound: string[] = [];
     const snapsNotFound: string[] = [];
 
-    const fsRename = promisify(fs.rename)
+    const fsRename = promisify(fs.rename);
     const mv = async (oldPath: string, newPath: string) => {
       // Using fs.rename + add/rm, because git.mv demands that all files are already tracked by git,
       // which isn't always the case for our branch conversions.
-      await fsRename(oldPath, newPath)
-      await git.add(newPath)
-      await git.rm(oldPath)
-    }
+      await fsRename(oldPath, newPath);
+      await git.add(newPath);
+      await git.rm(oldPath);
+    };
 
     async function renameSnap(path: string, oldExt: string, newExt: string) {
       const parsedPath = pathUtils.parse(path);
-      const jsSnapPath = `${parsedPath.dir}/__snapshots__/${
-        parsedPath.name
-      }${oldExt}.snap`;
-      const tsSnapPath = `${parsedPath.dir}/__snapshots__/${
-        parsedPath.name
-      }${newExt}.snap`;
+      const jsSnapPath = `${parsedPath.dir}/__snapshots__/${parsedPath.name}${oldExt}.snap`;
+      const tsSnapPath = `${parsedPath.dir}/__snapshots__/${parsedPath.name}${newExt}.snap`;
       if (await exists(jsSnapPath)) {
         console.log(`Renaming ${jsSnapPath} to ${tsSnapPath}`);
         snapsFound.push(jsSnapPath);

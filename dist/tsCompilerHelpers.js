@@ -35,7 +35,7 @@ function createTSCompiler(projectDir) {
 exports.createTSCompiler = createTSCompiler;
 function getDiagnostics(paths) {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield collectFiles_1.default(paths);
+        const files = yield (0, collectFiles_1.default)(paths);
         const { compilerOptions } = createTSCompiler(paths.projectDir);
         const program = typescript_1.default.createProgram(files, compilerOptions.options);
         const diagnostics = typescript_1.default.getPreEmitDiagnostics(program);
@@ -46,9 +46,9 @@ exports.getDiagnostics = getDiagnostics;
 function getFilePath(paths, diagnostic) {
     const fileName = diagnostic.file.fileName;
     let filePath = path_1.default.join(paths.projectDir, fileName);
-    if (!fs_1.existsSync(filePath)) {
+    if (!(0, fs_1.existsSync)(filePath)) {
         filePath = fileName;
-        if (!fs_1.existsSync(filePath)) {
+        if (!(0, fs_1.existsSync)(filePath)) {
             throw new Error(`${filePath} does not exist`);
         }
     }
