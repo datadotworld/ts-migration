@@ -12,7 +12,7 @@ export default async function commit(message: string, filePaths: FilePaths) {
   }
 
   try {
-    await git.commit(message, undefined, { "-n": null });
+    await git.commit(message, undefined, { "-n": "true" });
   } catch (e) {
     console.log("error committing");
     throw new Error(e as any);

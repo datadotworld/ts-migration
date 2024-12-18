@@ -22,7 +22,7 @@ function commit(message, filePaths) {
             throw new Error(e);
         }
         try {
-            yield git.commit(message, undefined, { "-n": null });
+            yield git.commit(message, undefined, { "-n": "true" });
         }
         catch (e) {
             console.log("error committing");
