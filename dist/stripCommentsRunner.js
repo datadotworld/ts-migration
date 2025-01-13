@@ -29,12 +29,12 @@ function run(paths, comments, shouldComit) {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield (0, collectFiles_1.default)(paths);
         let count = 0;
-        files.forEach(filePath => {
+        files.forEach((filePath) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const code = (0, fs_1.readFileSync)(filePath, "utf8");
                 const [fileData, countRemoved] = (0, stripComments_1.stripComments)(code, comments || flowComments);
                 count = count + countRemoved;
-                const formattedFileData = (0, prettierFormat_1.default)(fileData, paths.projectDir);
+                const formattedFileData = yield (0, prettierFormat_1.default)(fileData, paths.projectDir);
                 (0, fs_1.writeFileSync)(filePath, formattedFileData);
                 successFiles.push(filePath);
             }
@@ -42,7 +42,7 @@ function run(paths, comments, shouldComit) {
                 console.log(e);
                 errorFiles.push(filePath);
             }
-        });
+        }));
         if (shouldComit) {
             yield (0, commitAll_1.default)(`Strip comments`, paths);
         }

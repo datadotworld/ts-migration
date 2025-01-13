@@ -41,7 +41,6 @@ const babel = __importStar(require("@babel/core"));
 const plugin_syntax_dynamic_import_1 = __importDefault(require("@babel/plugin-syntax-dynamic-import"));
 const recast_1 = __importDefault(require("recast"));
 const fs_1 = require("fs");
-const babel_plugin_flow_to_typescript_1 = __importDefault(require("babel-plugin-flow-to-typescript"));
 const util_1 = require("./util");
 const stripComments_1 = require("./stripComments");
 function recastParse(code, options, parse) {
@@ -67,7 +66,7 @@ const recastPlugin = function (rootDir) {
 };
 const babelOptions = (rootDir) => ({
     configFile: false,
-    plugins: [recastPlugin(rootDir), babel_plugin_flow_to_typescript_1.default, plugin_syntax_dynamic_import_1.default]
+    plugins: [recastPlugin(rootDir), plugin_syntax_dynamic_import_1.default]
 });
 exports.babelOptions = babelOptions;
 const successFiles = [];

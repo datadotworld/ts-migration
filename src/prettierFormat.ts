@@ -1,7 +1,7 @@
 import * as prettier from "prettier";
 
-export default function prettierFormat(code: string, rootDir: string) {
-  const prettierConfig = prettier.resolveConfig.sync(rootDir);
+export default async function prettierFormat(code: string, rootDir: string) {
+  const prettierConfig = await prettier.resolveConfig(rootDir);
   return prettier.format(code, {
     ...prettierConfig,
     parser: "typescript"
