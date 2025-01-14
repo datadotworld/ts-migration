@@ -3,7 +3,6 @@ import * as babel from '@babel/core';
 import dynamicImport from '@babel/plugin-syntax-dynamic-import';
 import recast from 'recast';
 import { writeFileSync } from 'fs';
-import plugin from 'babel-plugin-flow-to-typescript';
 import { asyncForEach } from './util';
 import { stripComments } from './stripComments';
 
@@ -37,7 +36,7 @@ const recastPlugin = function(rootDir: string) {
 
 export const babelOptions = (rootDir: string): babel.TransformOptions => ({
   configFile: false,
-  plugins: [recastPlugin(rootDir), plugin, dynamicImport]
+  plugins: [recastPlugin(rootDir), dynamicImport]
 });
 
 const successFiles: string[] = [];

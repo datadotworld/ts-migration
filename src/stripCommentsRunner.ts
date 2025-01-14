@@ -22,7 +22,7 @@ export default async function run(
 ): Promise<void> {
   const files = await collectFiles(paths);
   let count = 0;
-  files.forEach(filePath => {
+  files.forEach(async filePath => {
     try {
       const code = readFileSync(filePath, "utf8");
 
@@ -31,7 +31,7 @@ export default async function run(
         comments || flowComments
       );
       count = count + countRemoved;
-      const formattedFileData = prettierFormat(fileData, paths.projectDir);
+      const formattedFileData = await prettierFormat(fileData, paths.projectDir);
       writeFileSync(filePath, formattedFileData);
       successFiles.push(filePath);
     } catch (e) {

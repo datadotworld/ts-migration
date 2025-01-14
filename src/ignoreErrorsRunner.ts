@@ -90,7 +90,7 @@ export default async function compile(
         readFileSync(filePath, "utf8").split("\n")
       );
       const fileData = modifiedCodeSplitByLine.join("\n");
-      const formattedFileData = prettierFormat(fileData, paths.projectDir);
+      const formattedFileData = await prettierFormat(fileData, paths.projectDir);
       writeFileSync(filePath, formattedFileData);
       successFiles.push(fileName);
     } catch (e) {
