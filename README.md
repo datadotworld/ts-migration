@@ -12,7 +12,7 @@ or add this in `devDependencies`:
 "ts-migration": "git+https://github.com/datadotworld/ts-migration"
 ```
 
-and run `yarn` or if you're using lerna, then run `lerna bootstrap`.
+and run `npm install`.
 
 ### This tool assumes:
 
@@ -26,19 +26,19 @@ Once installed, you can access the tools via the binary.
 ### Preview a conversion (without renaming files):
 
 ```
-yarn ts-migration convert-codebase
+npm run ts-migration convert-codebase
 ```
 
 ### Convert the codebase and rename files to `.ts[x]`:
 
 ```
-yarn ts-migration convert-codebase --commit
+npm run ts-migration convert-codebase --commit
 ```
 
 ### Ignore all TypeScript errors:
 
 ```
-yarn ts-migration ignore-errors [--commit] [--includeJSX]
+npm run ts-migration ignore-errors [--commit] [--includeJSX]
 ```
 
 The `--includeJSX` option can be extremely useful when you have a lot of errors you want to ignore, but will insert ignore comments in such a way that they can appear in the rendered HTML, so be sure to carefully review the output!
@@ -46,7 +46,7 @@ The `--includeJSX` option can be extremely useful when you have a lot of errors 
 ### Strip Flow comments
 
 ```
-yarn ts-migration strip-comments [--commit]
+npm run ts-migration strip-comments [--commit]
 ```
 
 # License
