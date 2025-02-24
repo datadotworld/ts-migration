@@ -31,7 +31,6 @@
     "url": "https://github.com/rgoldfinger-quizlet/babel-plugin-flow-to-typescript.git"
   },
   "peerDependencies": {
-    "@babel/core": "7.5.5",
     "typescript": "4.9.5"
   },
   "dependencies": {
