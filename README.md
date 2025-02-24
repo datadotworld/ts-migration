@@ -26,19 +26,19 @@ Once installed, you can access the tools via the binary.
 ### Preview a conversion (without renaming files):
 
 ```
-npm run ts-migration convert-codebase
+npx ts-migration convert-codebase
 ```
 
 ### Convert the codebase and rename files to `.ts[x]`:
 
 ```
-npm run ts-migration convert-codebase --commit
+npx ts-migration convert-codebase --commit
 ```
 
 ### Ignore all TypeScript errors:
 
 ```
-npm run ts-migration ignore-errors [--commit] [--includeJSX]
+npx ts-migration ignore-errors [--commit] [--includeJSX]
 ```
 
 The `--includeJSX` option can be extremely useful when you have a lot of errors you want to ignore, but will insert ignore comments in such a way that they can appear in the rendered HTML, so be sure to carefully review the output!
@@ -46,7 +46,7 @@ The `--includeJSX` option can be extremely useful when you have a lot of errors 
 ### Strip Flow comments
 
 ```
-npm run ts-migration strip-comments [--commit]
+npx ts-migration strip-comments [--commit]
 ```
 
 # License
