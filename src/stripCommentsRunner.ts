@@ -2,7 +2,6 @@ import { readFileSync, writeFileSync } from "fs";
 import collectFiles from "./collectFiles";
 import { stripComments } from "./stripComments";
 import commit from "./commitAll";
-import prettierFormat from "./prettierFormat";
 import { FilePaths } from "./cli";
 
 const successFiles: string[] = [];
@@ -31,8 +30,7 @@ export default async function run(
         comments || flowComments
       );
       count = count + countRemoved;
-      const formattedFileData = await prettierFormat(fileData, paths.projectDir);
-      writeFileSync(filePath, formattedFileData);
+      writeFileSync(filePath, fileData);
       successFiles.push(filePath);
     } catch (e) {
       console.log(e);

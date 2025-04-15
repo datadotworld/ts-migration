@@ -2,7 +2,6 @@ import { groupBy, uniqBy } from "lodash";
 import fs, { readFileSync, writeFileSync } from "fs";
 import { insertIgnore, getMissingTypePackages } from "./insertIgnore";
 import commit from "./commitAll";
-import prettierFormat from "./prettierFormat";
 import { getFilePath, getDiagnostics } from "./tsCompilerHelpers";
 import { FilePaths } from "./cli";
 import collectFiles from "./collectFiles";
@@ -90,8 +89,7 @@ export default async function compile(
         readFileSync(filePath, "utf8").split("\n")
       );
       const fileData = modifiedCodeSplitByLine.join("\n");
-      const formattedFileData = await prettierFormat(fileData, paths.projectDir);
-      writeFileSync(filePath, formattedFileData);
+      writeFileSync(filePath, fileData);
       successFiles.push(fileName);
     } catch (e) {
       console.log(e);

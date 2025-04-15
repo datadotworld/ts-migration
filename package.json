@@ -39,7 +39,6 @@
     "@babel/types": "7.17.0",
     "commander": "2.20.0",
     "lodash": "4.17.21",
-    "prettier": "3.4.2",
     "recast": "0.17.6",
     "simple-git": "3.27.0",
     "tsutils": "3.17.1"
@@ -52,7 +51,6 @@
     "@types/jest": "24.9.1",
     "@types/lodash": "4.14.150",
     "@types/node": "10.17.20",
-    "@types/prettier": "1.19.1",
     "@types/react": "16.14.52",
     "@types/scheduler": "0.16.8",
     "babel-core": "7.0.0-bridge.0",
