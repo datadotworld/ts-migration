@@ -1,1 +1,0 @@
-{"version":3,"file":"prettierFormat.js","sourceRoot":"","sources":["../src/prettierFormat.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,mDAAqC;AAErC,SAA8B,cAAc,CAAC,IAAY,EAAE,OAAe;;QACxE,MAAM,cAAc,GAAG,MAAM,QAAQ,CAAC,aAAa,CAAC,OAAO,CAAC,CAAC;QAC7D,OAAO,QAAQ,CAAC,MAAM,CAAC,IAAI,kCACtB,cAAc,KACjB,MAAM,EAAE,YAAY,IACpB,CAAC;IACL,CAAC;CAAA;AAND,iCAMC"}

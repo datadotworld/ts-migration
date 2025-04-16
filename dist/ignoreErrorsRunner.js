@@ -40,7 +40,6 @@ const lodash_1 = require("lodash");
 const fs_1 = __importStar(require("fs"));
 const insertIgnore_1 = require("./insertIgnore");
 const commitAll_1 = __importDefault(require("./commitAll"));
-const prettierFormat_1 = __importDefault(require("./prettierFormat"));
 const tsCompilerHelpers_1 = require("./tsCompilerHelpers");
 const collectFiles_1 = __importDefault(require("./collectFiles"));
 const util_1 = require("util");
@@ -83,25 +82,36 @@ function removeIgnores(paths) {
 exports.removeIgnores = removeIgnores;
 function compile(paths, shouldCommit, includeJSX) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(`~~~ Memory usage before getDiagnostics: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+        const startTime = Date.now();
         const diagnostics = yield (0, tsCompilerHelpers_1.getDiagnostics)(paths);
+        console.log(`~~~ getDiagnostics took ${(Date.now() - startTime) / 1000}s, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
         const diagnosticsWithFile = diagnostics.filter(d => !!d.file && !paths.exclude.some(e => d.file.fileName.includes(e)));
+        console.log(`~~~ After filtering diagnostics, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
         const diagnosticsGroupedByFile = (0, lodash_1.groupBy)(diagnosticsWithFile, d => d.file.fileName);
-        Object.keys(diagnosticsGroupedByFile).forEach((fileName, i, arr) => __awaiter(this, void 0, void 0, function* () {
+        console.log(`~~~ After grouping diagnostics, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB, File count: ${Object.keys(diagnosticsGroupedByFile).length}`);
+        yield Promise.all(Object.keys(diagnosticsGroupedByFile).map((fileName, i, arr) => __awaiter(this, void 0, void 0, function* () {
             const fileDiagnostics = (0, lodash_1.uniqBy)(diagnosticsGroupedByFile[fileName], d => d.file.getLineAndCharacterOfPosition(d.start)).reverse();
-            console.log(`${i + 1} of ${arr.length}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}`);
+            if (i % 50 === 0) {
+                console.log(`${i + 1} of ${arr.length}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+            }
+            else {
+                console.log(`${i + 1} of ${arr.length}: Ignoring ${fileDiagnostics.length} ts-error(s) in ${fileName}`);
+            }
             try {
                 const filePath = (0, tsCompilerHelpers_1.getFilePath)(paths, fileDiagnostics[0]);
-                const modifiedCodeSplitByLine = fileDiagnostics.reduce((codeSplitByLine, diagnostic) => (0, insertIgnore_1.insertIgnore)(diagnostic, codeSplitByLine, includeJSX, paths.rootDir), (0, fs_1.readFileSync)(filePath, "utf8").split("\n"));
+                const fileContent = (0, fs_1.readFileSync)(filePath, "utf8");
+                const modifiedCodeSplitByLine = fileDiagnostics.reduce((codeSplitByLine, diagnostic) => (0, insertIgnore_1.insertIgnore)(diagnostic, codeSplitByLine, includeJSX, paths.rootDir), fileContent.split("\n"));
                 const fileData = modifiedCodeSplitByLine.join("\n");
-                const formattedFileData = yield (0, prettierFormat_1.default)(fileData, paths.projectDir);
-                (0, fs_1.writeFileSync)(filePath, formattedFileData);
+                (0, fs_1.writeFileSync)(filePath, fileData);
                 successFiles.push(fileName);
             }
             catch (e) {
                 console.log(e);
                 errorFiles.push(fileName);
             }
-        }));
+        })));
+        console.log(`~~~ After processing all files, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
         if (shouldCommit) {
             yield (0, commitAll_1.default)(":see_no_evil: ignore errors", paths);
         }

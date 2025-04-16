@@ -16,7 +16,6 @@ const fs_1 = require("fs");
 const collectFiles_1 = __importDefault(require("./collectFiles"));
 const stripComments_1 = require("./stripComments");
 const commitAll_1 = __importDefault(require("./commitAll"));
-const prettierFormat_1 = __importDefault(require("./prettierFormat"));
 const successFiles = [];
 const errorFiles = [];
 const flowComments = [
@@ -34,8 +33,7 @@ function run(paths, comments, shouldComit) {
                 const code = (0, fs_1.readFileSync)(filePath, "utf8");
                 const [fileData, countRemoved] = (0, stripComments_1.stripComments)(code, comments || flowComments);
                 count = count + countRemoved;
-                const formattedFileData = yield (0, prettierFormat_1.default)(fileData, paths.projectDir);
-                (0, fs_1.writeFileSync)(filePath, formattedFileData);
+                (0, fs_1.writeFileSync)(filePath, fileData);
                 successFiles.push(filePath);
             }
             catch (e) {

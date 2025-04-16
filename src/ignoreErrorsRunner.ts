@@ -58,26 +58,45 @@ export default async function compile(
   shouldCommit: boolean,
   includeJSX: boolean
 ): Promise<void> {
+  console.log(`~~~ Memory usage before getDiagnostics: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  const startTime = Date.now();
   const diagnostics = await getDiagnostics(paths);
+  console.log(`~~~ getDiagnostics took ${(Date.now() - startTime) / 1000}s, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
   const diagnosticsWithFile = diagnostics.filter(
     d => !!d.file && !paths.exclude.some(e => d.file!.fileName.includes(e))
   );
+  console.log(`~~~ After filtering diagnostics, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
   const diagnosticsGroupedByFile = groupBy(
     diagnosticsWithFile,
     d => d.file!.fileName
   );
+  console.log(`~~~ After grouping diagnostics, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB, File count: ${Object.keys(diagnosticsGroupedByFile).length}`);
 
-  Object.keys(diagnosticsGroupedByFile).forEach(async (fileName, i, arr) => {
+  await Promise.all(Object.keys(diagnosticsGroupedByFile).map(async (fileName, i, arr) => {
     const fileDiagnostics = uniqBy(diagnosticsGroupedByFile[fileName], d =>
       d.file!.getLineAndCharacterOfPosition(d.start!)
     ).reverse();
-    console.log(
-      `${i + 1} of ${arr.length}: Ignoring ${
-        fileDiagnostics.length
-      } ts-error(s) in ${fileName}`
-    );
+    
+    if (i % 50 === 0) {
+      console.log(
+        `${i + 1} of ${arr.length}: Ignoring ${
+          fileDiagnostics.length
+        } ts-error(s) in ${fileName}, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`
+      );
+    } else {
+      console.log(
+        `${i + 1} of ${arr.length}: Ignoring ${
+          fileDiagnostics.length
+        } ts-error(s) in ${fileName}`
+      );
+    }
+    
     try {
       const filePath = getFilePath(paths, fileDiagnostics[0]);
+      const fileContent = readFileSync(filePath, "utf8");
+      
       const modifiedCodeSplitByLine = fileDiagnostics.reduce(
         (codeSplitByLine, diagnostic) =>
           insertIgnore(
@@ -86,8 +105,9 @@ export default async function compile(
             includeJSX,
             paths.rootDir
           ),
-        readFileSync(filePath, "utf8").split("\n")
+        fileContent.split("\n")
       );
+      
       const fileData = modifiedCodeSplitByLine.join("\n");
       writeFileSync(filePath, fileData);
       successFiles.push(fileName);
@@ -95,8 +115,10 @@ export default async function compile(
       console.log(e);
       errorFiles.push(fileName);
     }
-  });
+  }));
 
+  console.log(`~~~ After processing all files, Memory usage: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
   if (shouldCommit) {
     await commit(":see_no_evil: ignore errors", paths);
   }

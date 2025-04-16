@@ -32,17 +32,51 @@ export function createTSCompiler(projectDir: string) {
 }
 
 export async function getDiagnostics(paths: FilePaths) {
+  console.log(`~~~ getDiagnostics started, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  const startTime = Date.now();
   const files = await collectFiles(paths);
+  console.log(`~~~ collectFiles returned ${files.length} files, Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  const compilerStartTime = Date.now();
   const { compilerOptions } = createTSCompiler(paths.projectDir);
-
+  console.log(`~~~ createTSCompiler completed, Time: ${((Date.now() - compilerStartTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  const programStartTime = Date.now();
+  console.log(`~~~ Creating TypeScript program with ${files.length} files...`);
+  
+  // Run garbage collection if available to minimize memory before heavy operations
+  if (global.gc) {
+    console.log(`~~~ Running garbage collection before creating TypeScript program`);
+    global.gc();
+    console.log(`~~~ After garbage collection, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  }
+  
   const program = ts.createProgram(files, compilerOptions.options);
-
+  console.log(`~~~ TypeScript program created, Time: ${((Date.now() - programStartTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  const diagnosticsStartTime = Date.now();
+  console.log(`~~~ Getting pre-emit diagnostics...`);
   const diagnostics = ts.getPreEmitDiagnostics(program);
-  return diagnostics.filter(diagnostic =>
-    paths.include.some(includedPath =>
+  console.log(`~~~ Got ${diagnostics.length} total diagnostics, Time: ${((Date.now() - diagnosticsStartTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  const filterStartTime = Date.now();
+  const filteredDiagnostics = diagnostics.filter(diagnostic =>
+    diagnostic.file !== undefined && paths.include.some(includedPath =>
       diagnostic.file!.fileName.includes(includedPath)
     )
   );
+  console.log(`~~~ Filtered to ${filteredDiagnostics.length} diagnostics for included paths, Time: ${((Date.now() - filterStartTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  
+  // Run garbage collection to clean up memory after heavy operations
+  if (global.gc) {
+    console.log(`~~~ Running garbage collection after getting diagnostics`);
+    global.gc();
+    console.log(`~~~ After garbage collection, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  }
+  
+  console.log(`~~~ getDiagnostics complete, Total Time: ${((Date.now() - startTime) / 1000).toFixed(2)}s, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+  return filteredDiagnostics;
 }
 
 export function getFilePath(paths: FilePaths, diagnostic: ts.Diagnostic) {

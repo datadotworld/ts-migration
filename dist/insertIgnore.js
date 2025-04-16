@@ -84,48 +84,87 @@ function getMissingTypePackages() {
 }
 exports.getMissingTypePackages = getMissingTypePackages;
 function insertIgnore(diagnostic, codeSplitByLine, includeJSX, rootDir) {
-    const convertedAST = utils.convertAst(diagnostic.file);
-    const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
-    const line = getLine(diagnostic);
-    const isInJSX = findParentJSX(n);
-    if (!includeJSX) {
-        // Don't add ignores in JSX since it's too hard.
-        return codeSplitByLine;
+    var _a;
+    // We'll add a counter to track large files
+    const fileSize = codeSplitByLine.length;
+    if (fileSize > 10000) {
+        console.log(`~~~ Warning: Processing large file with ${fileSize} lines`);
     }
-    const ignoreComment = ignoreText(diagnostic, rootDir);
-    const maybeResult = [
-        ...codeSplitByLine.slice(0, line),
-        IGNORE_TEXT,
-        ...codeSplitByLine.slice(line)
-    ];
-    if (isInJSX) {
-        const sourceFile = typescript_1.default.createSourceFile(diagnostic.file.fileName, maybeResult.join("\n"), typescript_1.default.ScriptTarget.ESNext);
-        const newConvertedAst = utils.convertAst(sourceFile);
-        if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
-            return [
+    // Get the diagnostic filename for better logging
+    const fileName = ((_a = diagnostic.file) === null || _a === void 0 ? void 0 : _a.fileName) || 'unknown';
+    const shortFileName = fileName.split('/').pop() || 'unknown';
+    try {
+        const startMemory = process.memoryUsage().heapUsed;
+        const startTime = Date.now();
+        // Convert AST - potential memory issue here
+        const convertedAST = utils.convertAst(diagnostic.file);
+        if (Date.now() - startTime > 1000) {
+            console.log(`~~~ convertAst for ${shortFileName} took ${(Date.now() - startTime)}ms, Memory change: ${Math.round((process.memoryUsage().heapUsed - startMemory) / 1024 / 1024)}MB`);
+        }
+        const nodeStartTime = Date.now();
+        const n = utils.getWrappedNodeAtPosition(convertedAST.wrapped, diagnostic.start);
+        if (Date.now() - nodeStartTime > 500) {
+            console.log(`~~~ getWrappedNodeAtPosition for ${shortFileName} took ${(Date.now() - nodeStartTime)}ms`);
+        }
+        const line = getLine(diagnostic);
+        const isInJSX = findParentJSX(n);
+        if (!includeJSX) {
+            // Don't add ignores in JSX since it's too hard.
+            return codeSplitByLine;
+        }
+        const ignoreComment = ignoreText(diagnostic, rootDir);
+        // Create new arrays efficiently to avoid excessive memory use
+        let maybeResult;
+        if (isInJSX) {
+            maybeResult = [
                 ...codeSplitByLine.slice(0, line),
-                "{ /*",
-                `${ignoreComment} */ }`,
+                IGNORE_TEXT,
+                ...codeSplitByLine.slice(line)
+            ];
+            const jsxStartTime = Date.now();
+            // This is potentially memory-intensive for large files
+            const sourceFile = typescript_1.default.createSourceFile(diagnostic.file.fileName, maybeResult.join("\n"), typescript_1.default.ScriptTarget.ESNext);
+            if (Date.now() - jsxStartTime > 1000) {
+                console.log(`~~~ Creating source file for JSX in ${shortFileName} took ${(Date.now() - jsxStartTime)}ms, Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`);
+            }
+            const newConvertedAst = utils.convertAst(sourceFile);
+            if (newConvertedAst.flat.some(nodeContainsTSIgnore)) {
+                return [
+                    ...codeSplitByLine.slice(0, line),
+                    "{ /*",
+                    `${ignoreComment} */ }`,
+                    ...codeSplitByLine.slice(line)
+                ];
+            }
+        }
+        // Ensure proper sequencing of eslint ignores and ts-ignores
+        if (codeSplitByLine.length > 0 &&
+            line > 0 &&
+            codeSplitByLine[line - 1].includes("// eslint-disable-next-line")) {
+            return [
+                ...codeSplitByLine.slice(0, line - 1),
+                ignoreComment,
+                codeSplitByLine[line - 1],
                 ...codeSplitByLine.slice(line)
             ];
         }
-    }
-    // Ensure proper sequencing of eslint ignores and ts-ignores
-    if (codeSplitByLine.length > 0 &&
-        line > 0 &&
-        codeSplitByLine[line - 1].includes("// eslint-disable-next-line")) {
-        return [
-            ...codeSplitByLine.slice(0, line - 1),
+        const result = [
+            ...codeSplitByLine.slice(0, line),
             ignoreComment,
-            codeSplitByLine[line - 1],
             ...codeSplitByLine.slice(line)
         ];
+        const totalTime = Date.now() - startTime;
+        const totalMemoryChange = Math.round((process.memoryUsage().heapUsed - startMemory) / 1024 / 1024);
+        if (totalTime > 1000 || totalMemoryChange > 20) {
+            console.log(`~~~ insertIgnore for ${shortFileName} took ${totalTime}ms, Memory change: ${totalMemoryChange}MB`);
+        }
+        return result;
     }
-    return [
-        ...codeSplitByLine.slice(0, line),
-        ignoreComment,
-        ...codeSplitByLine.slice(line)
-    ];
+    catch (error) {
+        console.error(`~~~ Error in insertIgnore for file ${shortFileName}: ${error}`);
+        // Return original lines in case of error to avoid corrupting the file
+        return codeSplitByLine;
+    }
 }
 exports.insertIgnore = insertIgnore;
 //# sourceMappingURL=insertIgnore.js.map
