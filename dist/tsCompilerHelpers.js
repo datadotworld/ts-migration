@@ -39,9 +39,7 @@ function getDiagnostics(paths) {
         const { compilerOptions } = createTSCompiler(paths.projectDir);
         const program = typescript_1.default.createProgram(files, compilerOptions.options);
         const diagnostics = typescript_1.default.getPreEmitDiagnostics(program);
-        return diagnostics.filter(diagnostic => {
-            return paths.include.some(includedPath => { var _a; return (_a = diagnostic.file) === null || _a === void 0 ? void 0 : _a.fileName.includes(includedPath); });
-        });
+        return diagnostics.filter(diagnostic => paths.include.some(includedPath => { var _a; return (_a = diagnostic.file) === null || _a === void 0 ? void 0 : _a.fileName.includes(includedPath); }));
     });
 }
 exports.getDiagnostics = getDiagnostics;
