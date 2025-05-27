@@ -39,8 +39,8 @@ export async function getDiagnostics(paths: FilePaths) {
 
   const diagnostics = ts.getPreEmitDiagnostics(program);
   return diagnostics.filter(diagnostic =>
-     paths.include.some(includedPath =>
-        diagnostic.file?.fileName.includes(includedPath)
+    paths.include.some(includedPath =>
+      diagnostic.file?.fileName.includes(includedPath)
     )
   );
 }
